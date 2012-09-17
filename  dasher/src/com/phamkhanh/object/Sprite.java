@@ -7,7 +7,7 @@ import com.phamkhanh.mapengine.MapEngine;
 import java.awt.image.*;
 
 /**
- *  Class Sprite bieu dien mot doi tuong chuyen dong tren ban do
+ *  Class Sprite bieu dien mot doi tuong chuyen dong tren ban do,lop superclass
  *  Mot so thuoc tinh quan trong:
  *    - ptMap : Vi tri tile hien tai cua sprite
  *    - direction : Huong chuyen dong hien tai cua sprite
