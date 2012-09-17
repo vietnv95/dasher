@@ -9,7 +9,8 @@ import java.awt.image.*;
 /**
  *  Class Sprite bieu dien mot doi tuong chuyen dong tren ban do,lop superclass box
  *  Mot so thuoc tinh rat quan trong:
- *    - ptMap : Vi tri tile hien tai cua sprite theo toa do tile map *    - direction : Huong chuyen dong hien tai cua sprite
+ *    - ptMap : Vi tri tile hien tai cua sprite theo toa do tile map 
+ *    - direction : Huong chuyen dong hien tai cua sprite
  *    - speed : Toc do chuyen dong cua sprite (don vi tile/s)
  *    - ptOffset : Buoc di chuyen nho cua sprite, Cang nho thi sprite chuyen dong cang muot 
  *    - image : Anh cua sprite
