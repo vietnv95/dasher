@@ -109,7 +109,7 @@ public class Sprite
 	 *  Neu dung la chot chuyen huong,tien hanh update lai huong di chuyen cho sprite
 	 */
 	public void updateDirection(){
-		
+		if(ptMap.y == 30) setDirection(Direction.SOUTHWEST);
 	}
 	
 	private class SpritePlayer {
