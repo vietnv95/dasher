@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.phamkhanh.image.ImageLoader;
@@ -18,9 +16,6 @@ import com.phamkhanh.object.Producer;
 import com.phamkhanh.object.Tile;
 
 public class TilePanel extends JPanel {
-	// Doi tuong tham chieu de thay doi tileSelected
-	private DesignPanel designPanel;
-	
 	private static final int PWIDTH = 32;
 	private static final int PHEIGHT = 488;
 	
@@ -30,8 +25,6 @@ public class TilePanel extends JPanel {
 	
 	
 	public TilePanel(final DesignPanel designPanel){
-		this.designPanel = designPanel;
-		
 		setDoubleBuffered(true);
 		setBackground(Color.WHITE);
 		setPreferredSize(new Dimension(PWIDTH, PHEIGHT));
@@ -86,6 +79,8 @@ public class TilePanel extends JPanel {
 			}
 		}
 	}
+	
+	
 	
 }
 

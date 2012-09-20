@@ -40,7 +40,7 @@ public class DesignPanelTest extends JFrame implements WindowListener{
 	public void windowClosed(WindowEvent arg0) {}
 
 	@Override
-	public void windowClosing(WindowEvent arg0) {designPanel.stopDesign();}
+	public void windowClosing(WindowEvent arg0) {designPanel.stopDesign();};
 
 	@Override
 	public void windowDeactivated(WindowEvent arg0) {designPanel.pauseDesign();}

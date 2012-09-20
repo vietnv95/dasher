@@ -8,18 +8,12 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JPanel;
-
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Map;
-import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Tile;
-import com.sun.j3d.utils.timer.J3DTimer;
 
 public class DesignPanel extends JPanel implements Runnable {
 	
@@ -47,6 +41,10 @@ public class DesignPanel extends JPanel implements Runnable {
 	private Tile tileSelected;
 	public volatile int x;
 	public volatile int y;
+	
+	private boolean isDragged;
+	private Point ptHead;
+	private Point ptTail;
 	
 	
 	// More variables, explained later
@@ -79,7 +77,7 @@ public class DesignPanel extends JPanel implements Runnable {
 		
 		map = new Map();
 		
-		tileSelected = new Tile();
+		tileSelected = null;
 
 		// Listen for mouse event
 		MouseHandler listener = new MouseHandler(this);
@@ -202,6 +200,7 @@ public class DesignPanel extends JPanel implements Runnable {
 
 	// draw the current frame to an image buffer (secondary image) use graphics of image
 	// size of image buffer == size of screen
+	private Point ptMouse = new Point();
 	private void designRender() {
 		if (dbImage == null) {
 			dbImage = createImage(PWIDTH, PHEIGHT);
@@ -227,7 +226,11 @@ public class DesignPanel extends JPanel implements Runnable {
 		map.draw(dbg);
 		
 		// Draw tileSelected at toa do chuot,sao cho chuot nam o tam cua tileSelected
-		dbg.drawImage(tileSelected.getImage(), x - MapEngine.TILEWIDTH/2, y - MapEngine.TILEHEIGHT/2, null);
+		if(tileSelected != null){
+			ptMouse.setLocation(x, y);
+			tileSelected.setPtMap(MapEngine.mouseMap(ptMouse));
+			tileSelected.draw(dbg);
+		}
 		
 		if (designEnd) {
 			

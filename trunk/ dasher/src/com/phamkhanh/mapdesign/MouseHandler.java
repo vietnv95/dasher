@@ -3,13 +3,10 @@ package com.phamkhanh.mapdesign;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-import javax.swing.event.MouseInputListener;
 
 public class MouseHandler implements MouseListener, MouseMotionListener {
 	private DesignPanel designPanel;
+	
 	
 	public MouseHandler(DesignPanel designPanel){
 		this.designPanel = designPanel;
@@ -29,13 +26,12 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		
-		
+		designPanel.x = -100;
+		designPanel.y = -100;	
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		
 		
 	}
 
