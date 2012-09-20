@@ -72,6 +72,9 @@ public class MapEngine {
 	 * @return Map ordinate by tile
 	 */
 	public static Point mouseMap(Point ptMouse) {
+		if(ptMouse.x < 0 || ptMouse.y < 0){
+			return new Point(-10,-10);
+		}
 		// Chia ban do thanh cac o hinh chu nhat, tim xem chuot nam trong o hinh
 		// chu nhat nao.
 		Point ptMouseMapCoarse = new Point();
