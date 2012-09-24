@@ -52,7 +52,6 @@ public class TilePanel extends JPanel {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println(e.getY());
 				int index = e.getY() / MapEngine.TILEHEIGHT;
 				if(index >= 0 && index < numberTile){
 					indexSelected = index;

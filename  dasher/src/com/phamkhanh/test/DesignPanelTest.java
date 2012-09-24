@@ -2,6 +2,7 @@ package com.phamkhanh.test;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
@@ -10,12 +11,11 @@ import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.DesignPanel;
 import com.phamkhanh.mapdesign.TilePanel;
 
-public class DesignPanelTest extends JFrame implements WindowListener{
+public class DesignPanelTest extends JFrame implements WindowListener, WindowFocusListener{
 	private TilePanel tilePanel;
 	private DesignPanel designPanel;
 	public DesignPanelTest(){
 		setTitle("TileFrame");
-		setVisible(true);
 		
 		designPanel = new DesignPanel();
 		tilePanel = new TilePanel(designPanel);
@@ -24,7 +24,12 @@ public class DesignPanelTest extends JFrame implements WindowListener{
 		getContentPane().add(tilePanel, BorderLayout.WEST);
 		getContentPane().add(designPanel, BorderLayout.CENTER);
 		
+		addWindowListener(this);
+		addWindowFocusListener(this);
 		pack();
+		
+		setResizable(false);
+		setVisible(true);
 	}
 	
 	public static void main(String[] args){
@@ -37,10 +42,10 @@ public class DesignPanelTest extends JFrame implements WindowListener{
 	public void windowActivated(WindowEvent arg0) {designPanel.resumeDesign();}
 
 	@Override
-	public void windowClosed(WindowEvent arg0) {}
+	public void windowClosed(WindowEvent arg0) {System.exit(0);}
 
 	@Override
-	public void windowClosing(WindowEvent arg0) {designPanel.stopDesign();};
+	public void windowClosing(WindowEvent arg0) {designPanel.stopDesign(); };
 
 	@Override
 	public void windowDeactivated(WindowEvent arg0) {designPanel.pauseDesign();}
@@ -53,4 +58,13 @@ public class DesignPanelTest extends JFrame implements WindowListener{
 
 	@Override
 	public void windowOpened(WindowEvent arg0) {}
+
+	@Override
+	public void windowGainedFocus(WindowEvent e) {
+		designPanel.requestFocus();
+	}
+
+	@Override
+	public void windowLostFocus(WindowEvent e) {	
+	}
 }
