@@ -3,11 +3,12 @@ package com.phamkhanh.mapdesign;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-public class DesignFrame extends JFrame implements WindowListener {
+public class DesignFrame extends JFrame implements WindowListener, WindowFocusListener {
 	
 	private DesignPanel designPanel;
 	
@@ -19,6 +20,7 @@ public class DesignFrame extends JFrame implements WindowListener {
 		con.add(designPanel, BorderLayout.CENTER);
 		
 		addWindowListener(this);
+		addWindowFocusListener(this);
 		pack();
 		
 		setResizable(false);
@@ -46,8 +48,23 @@ public class DesignFrame extends JFrame implements WindowListener {
 	@Override
 	public void windowOpened(WindowEvent arg0) {}
 	
+	@Override
+	public void windowGainedFocus(WindowEvent e) {
+		designPanel.requestFocusInWindow();	
+	}
+
+	@Override
+	public void windowLostFocus(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	
 	public static void main(String[] args){
 		new DesignFrame();
 	}
+	
+	
 }
+
+	

@@ -25,6 +25,14 @@ public class Map {
 		
 	}
 	
+	public Cell[][] getTileMap() {
+		return tileMap;
+	}
+
+	public void setTileMap(Cell[][] tileMap) {
+		this.tileMap = tileMap;
+	}
+
 	public void draw(Graphics g){
 		for(int y = 0; y < MAPHEIGHT; y++){
 			for(int x = 0; x < MAPWIDTH; x++){

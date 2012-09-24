@@ -72,9 +72,6 @@ public class MapEngine {
 	 * @return Map ordinate by tile
 	 */
 	public static Point mouseMap(Point ptMouse) {
-		if(ptMouse.x < 0 || ptMouse.y < 0){
-			return new Point(-10,-10);
-		}
 		// Chia ban do thanh cac o hinh chu nhat, tim xem chuot nam trong o hinh
 		// chu nhat nao.
 		Point ptMouseMapCoarse = new Point();
@@ -85,7 +82,15 @@ public class MapEngine {
 		Point ptMouseMapFine = new Point();
 		ptMouseMapFine.x = ptMouse.x % TILEWIDTH;
 		ptMouseMapFine.y = ptMouse.y % TILEHEIGHT;
-
+		// Adjust for negative fine coordinates
+		if(ptMouseMapFine.x < 0){
+			ptMouseMapFine.x += TILEWIDTH;
+			ptMouseMapCoarse.x--;
+		}
+		if(ptMouseMapFine.y < 0){
+			ptMouseMapFine.y += TILEHEIGHT;
+			ptMouseMapCoarse.y--;
+		}
 		Point ptMap = new Point(0, 0);
 
 		// Tim toa do tile nam giua hinh chu nhat
@@ -116,6 +121,41 @@ public class MapEngine {
 		}
 
 		return ptMap;
+	}
+	
+	/**
+	 *  Tra ve huong tu ptHead den ptTail
+	 * @param ptHead
+	 * 			 Toa do o bat dau
+	 * @param ptTail
+	 * 			 Toa do o ket thuc
+	 * @return   Huong can tim
+	 */
+	public static Direction tileDirecter(final Point ptHead, final Point ptTail){
+		Point ptHeadPixel = MapEngine.tilePlotter(ptHead);
+		Point ptTailPixel = MapEngine.tilePlotter(ptTail);
+		int deltaX= ptTailPixel.x - ptHeadPixel.x;
+		int deltaY= ptTailPixel.y - ptHeadPixel.y;
+		
+		if(deltaX == 0 && deltaY == 0) return Direction.SOUTHEAST;
+		if(deltaX == 0){
+			if(deltaY > 0) return Direction.SOUTH;
+			else if(deltaY < 0) return Direction.NORTH;
+		}
+		if(deltaY == 0){
+			if(deltaX > 0) return Direction.EAST;
+			else if(deltaX < 0) return Direction.WEST;
+		}
+		if(deltaX != 0 && deltaY != 0){
+			if(Math.abs(deltaX)*TILEHEIGHT == Math.abs(deltaY)*TILEWIDTH){
+				if(deltaX > 0 && deltaY > 0) return Direction.SOUTHEAST;
+				else if(deltaX > 0 && deltaY < 0) return Direction.NORTHEAST;
+				else if(deltaX < 0 && deltaY > 0) return Direction.SOUTHWEST;
+				else if(deltaX < 0 && deltaY < 0) return Direction.NORTHWEST;
+			}
+		}
+		
+		return null;
 	}
 
 	private static class MouseMapDirection {
