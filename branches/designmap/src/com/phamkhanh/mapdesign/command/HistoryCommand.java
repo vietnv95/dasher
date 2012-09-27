@@ -1,8 +1,6 @@
 package com.phamkhanh.mapdesign.command;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 public class HistoryCommand {
 	// History List Commands

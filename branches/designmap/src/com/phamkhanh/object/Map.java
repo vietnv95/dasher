@@ -34,11 +34,33 @@ public class Map {
 	}
 
 	public void draw(Graphics g){
+		
 		for(int y = 0; y < MAPHEIGHT; y++){
 			for(int x = 0; x < MAPWIDTH; x++){
-				tileMap[x][y].draw(g);
+				if(tileMap[x][y].getClass() == Cell.class){
+					tileMap[x][y].draw(g);
+				}
 			}
 		}
+		
+		for(int y = 0; y < MAPHEIGHT; y++){
+			for(int x = 0; x < MAPWIDTH; x++){
+				if(tileMap[x][y].getClass() == Conveyer.class){
+					tileMap[x][y].draw(g);
+				}
+			}
+		}
+		
+		for(int y = 0; y < MAPHEIGHT; y++){
+			for(int x = 0; x < MAPWIDTH; x++){
+				if(tileMap[x][y].getClass() == Controller.class || 
+						tileMap[x][y].getClass() == Producer.class ||
+						tileMap[x][y].getClass() == Consumer.class ){
+					tileMap[x][y].draw(g);
+				}
+			}
+		}
+		
 	}
 	
 }

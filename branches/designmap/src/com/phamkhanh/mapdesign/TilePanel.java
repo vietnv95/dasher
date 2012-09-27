@@ -31,7 +31,7 @@ public class TilePanel extends JPanel {
 		
 		// Load tiles
 		tiles[0] = new Conveyer(new Point(0,0), ImageLoader.getImage("conveyer.png"), null);
-		tiles[1] = new Producer(new Point(0,4), ImageLoader.getImage("producer.png"), null, null);
+		tiles[1] = new Producer(new Point(0,4), ImageLoader.getImage("producer.png"),null, null);
 		tiles[2] = new Consumer(new Point(0,6), ImageLoader.getImage("consumer.png"), null, null);
 		
 		// Handler mouse event

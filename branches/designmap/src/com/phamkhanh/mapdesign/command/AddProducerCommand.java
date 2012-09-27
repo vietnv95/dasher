@@ -13,31 +13,38 @@ import com.phamkhanh.object.Producer;
 public class AddProducerCommand implements Command {
 	
 	private Map map;
-	private Cell beforeProducer;
-	private Cell afterProducer;
+	private Cell beforePro;
+	private Cell afterPro;
 	
 	public AddProducerCommand(DesignPanel designPanel){
 		map = designPanel.getMap();
 		Point ptMap = MapEngine.mouseMap(designPanel.ptMouse);
-		this.afterProducer = new Producer(ptMap, ImageLoader.getImage("producer.png"), Direction.SOUTHEAST, null);	
-		this.beforeProducer = map.getTileMap()[afterProducer.getPtMap().x][afterProducer.getPtMap().y];
+		this.afterPro = new Producer(ptMap, ImageLoader.getImage("producer.png"), Direction.SOUTHEAST, null);	
+		this.beforePro = map.getTileMap()[ptMap.x][ptMap.y];
 	}
 	
 	@Override
 	public void execute() {	
-		map.getTileMap()[afterProducer.getPtMap().x][afterProducer.getPtMap().y] = afterProducer;
-		System.out.println("Before:"+beforeProducer);
-		System.out.println("After:"+afterProducer);
+		int x = afterPro.getPtMap().x;
+		int y = afterPro.getPtMap().y;
+		map.getTileMap()[x][y] = afterPro;
+		
+		System.out.println("Before:"+beforePro);
+		System.out.println("After:"+afterPro);
 	}
 
 	@Override
 	public void undo() {
-		map.getTileMap()[afterProducer.getPtMap().x][afterProducer.getPtMap().y] = this.beforeProducer;
+		int x = afterPro.getPtMap().x;
+		int y = afterPro.getPtMap().y;
+		map.getTileMap()[x][y] = this.beforePro;
 	}
 
 	@Override
 	public void redo() {
-		map.getTileMap()[afterProducer.getPtMap().x][afterProducer.getPtMap().y] = this.afterProducer;
+		int x = afterPro.getPtMap().x;
+		int y = afterPro.getPtMap().y;
+		map.getTileMap()[x][y] = this.afterPro;
 	}
 
 }

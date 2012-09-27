@@ -3,7 +3,6 @@ package com.phamkhanh.object;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-
 import com.phamkhanh.mapengine.MapEngine;
 
 public class Tile extends Cell {
@@ -34,7 +33,7 @@ public class Tile extends Cell {
 
 	@Override
 	public String toString() {
-		return "Tile [image=" + image + ", toString()=" + super.toString()
+		return "Tile [toString()=" + super.toString()
 				+ "]";
 	}
 

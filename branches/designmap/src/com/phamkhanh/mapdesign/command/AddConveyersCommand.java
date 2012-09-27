@@ -12,6 +12,7 @@ import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Controller;
 import com.phamkhanh.object.Conveyer;
 import com.phamkhanh.object.Map;
+import com.phamkhanh.object.Tile;
 
 public class AddConveyersCommand implements Command {
 
@@ -19,8 +20,8 @@ public class AddConveyersCommand implements Command {
 	private List<Cell> before = new ArrayList<Cell>();
 	private List<Cell> after = new ArrayList<Cell>();
 	private Direction direction;
-	Point ptHead;
-	Point ptTail;
+	private Point ptHead;
+	private Point ptTail;
 
 	public AddConveyersCommand(DesignPanel designPanel) {
 		map = designPanel.getMap();
@@ -93,10 +94,10 @@ public class AddConveyersCommand implements Command {
 		Point ptMap = MapEngine.tileWalker(new Point(x, y), direct);
 		Cell nearCell = map.getTileMap()[ptMap.x][ptMap.y];
 
-		if (nearCell.getClass() == Cell.class) {
+		if (nearCell.getClass() == Cell.class || nearCell.getClass() == Tile.class) {
 			return 0;
 		} else if (nearCell.getClass() == Conveyer.class) {
-			if (((Conveyer) nearCell).getDirection() == reverseDirection(direct))
+			if (((Conveyer) nearCell).getDirection() == MapEngine.reverseDirection(direct))
 				return -1;
 			else
 				return 1;
@@ -104,7 +105,7 @@ public class AddConveyersCommand implements Command {
 			ArrayList<Direction> directions = ((Controller) nearCell)
 					.getDirections();
 			if (directions.size() == 1
-					&& directions.get(0) == reverseDirection(direct))
+					&& directions.get(0) == MapEngine.reverseDirection(direct))
 				return -1;
 			else
 				return 1;
@@ -112,17 +113,7 @@ public class AddConveyersCommand implements Command {
 			return 0;
 	}
 
-	private Direction reverseDirection(Direction direct) {
-		if (direct == Direction.NORTHEAST)
-			return Direction.SOUTHWEST;
-		if (direct == Direction.SOUTHWEST)
-			return Direction.NORTHEAST;
-		if (direct == Direction.SOUTHEAST)
-			return Direction.NORTHWEST;
-		if (direct == Direction.NORTHWEST)
-			return Direction.SOUTHEAST;
-		return null;
-	}
+	
 
 	@Override
 	public void undo() {
