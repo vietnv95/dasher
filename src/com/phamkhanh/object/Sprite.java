@@ -1,9 +1,9 @@
 package com.phamkhanh.object;
 
 import java.awt.*;
+
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
-
 import java.awt.image.*;
 
 /**
@@ -22,18 +22,16 @@ public class Sprite
 {
 	private Point ptMap;  // Toa do tile hien tai cua Sprite
 	private Point ptTile;  // Toa do pixel hien tai cua Sprite
-	private Point ptOffset;  // Offset de thay doi toa do ptTile trong moi buoc nho,ptOffset cang nho thi sprite chuyen dong cang muot
 	private int speed;  // Toc do,don vi tile/s
 	private Direction direction;  // Huong di chuyen cua Sprite
 	private BufferedImage image;
 	private boolean active = true;
 	private SpritePlayer player;
 
-	public Sprite(Point ptMap, Direction direction, int speed, Point ptOffset, BufferedImage image) {
+	public Sprite(Point ptMap, Direction direction, int speed, BufferedImage image) {
 		super();
 		this.ptMap = ptMap;
 		this.direction = direction;
-		this.ptOffset = ptOffset;
 		this.speed = speed;
 		this.ptTile = MapEngine.tilePlotter(ptMap);
 		this.image = image;
@@ -51,13 +49,6 @@ public class Sprite
 		this.direction = direction;
 	}
 
-	public Point getPtOffset() {
-		return ptOffset;
-	}
-
-	public void setPtOffset(Point ptOffset) {
-		this.ptOffset = ptOffset;
-	}
 
 	public BufferedImage getImage() {
 		return image;
@@ -73,8 +64,6 @@ public class Sprite
 
 	public void setActive(boolean active) {
 		this.active = active;
-		if(!active) player.stop();
-		else player.play();
 	}
 	
 	public int getSpeed() {
@@ -93,7 +82,8 @@ public class Sprite
 		g.drawImage(image,ptTile.x, ptTile.y-16, null);
 	}
 	
-	/** Ham update toa do ptMap va ptTile, duoc goi trong moi vong lap GameUpdate()
+	/** 
+	 * Ham update toa do ptMap va ptTile, duoc goi trong moi vong lap GameUpdate()
 	 *  ptMap
 	 *     Chi update theo tung o mot,nhay tung o,dung phuong thuc tileWalker
 	 *  ptTile 
@@ -109,9 +99,20 @@ public class Sprite
 	 *  Neu dung la chot chuyen huong,tien hanh update lai huong di chuyen cho sprite
 	 */
 	public void updateDirection(){
-		if(ptMap.y == 30) setDirection(Direction.SOUTHWEST);
+		
 	}
 	
+	
+	
+	/**
+	 * Lớp SpritePlayer có nhiệm vụ tạo chuyển động cho đối tượng Sprite, tức thay đổi tọa độ của Sprite
+	 * Tọa độ Sprite sẽ được thay đổi (offset) sau một khoảng thời gian cố định nào đó,phụ thuộc tốc độ Sprite
+	 * Mặc dù,Sprite gọi update() sau mỗi vòng lặp game,nhưng không phải lần gọi nào cũng update tọa độ của nó
+	 * mà chỉ sau những khoảng thời gian nhất định (một vài lần gọi update() ) thì sự thay đổi tọa độ mới
+	 * xảy ra.
+	 * @author Khanh
+	 *
+	 */
 	private class SpritePlayer {
 		private int seqDuration; // ms Thoi gian de di chuyen mot o toa do tile
 		private int showPeriod;  // ms Thoi gian show cua moi buoc di chuyen nho
@@ -120,8 +121,7 @@ public class Sprite
 		
 		private int animPeriod;  // ms Chu ki cua mot vong lap game
 		private long animTotalTime; // ms Thoi gian tinh tu luc sprite bat dau chuyen dong mot chu ki seqDuration
-		
-		private boolean play; // Sprite co tiep tuc chuyen dong hay khong
+		private Point ptOffset;  // Offset de thay doi toa do ptTile trong moi buoc nho,ptOffset cang nho thi sprite chuyen dong cang muot
 		
 		public SpritePlayer(int seqDuration){
 			this.seqDuration = seqDuration;
@@ -131,13 +131,11 @@ public class Sprite
 			this.animPeriod = (int)(1000/MapEngine.FPS);
 			this.animTotalTime = 0L;
 			
-			this.play = true;
 			this.step = 0;
-			
 		}
 		
 		public void updateStick(){
-			if(play){
+			if(active){
 				// Xac dinh tong thoi gian tinh tu chu ki moi
 				animTotalTime = (animTotalTime + animPeriod)% seqDuration; // Trong khoang 0 -> seqDuration-1 
 				step = (int)animTotalTime/showPeriod;  // Trong khoang 0 -> totalStep-1
@@ -169,13 +167,6 @@ public class Sprite
 			this.seqDuration = seqDuration;
 		}
 		
-		public void stop(){
-			play = false;
-		}
-		
-		public void play(){
-			play = true;
-		}
 	}
 
 }  

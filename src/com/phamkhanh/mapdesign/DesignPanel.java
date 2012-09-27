@@ -9,23 +9,18 @@ import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JPanel;
-
 import com.phamkhanh.image.ImageLoader;
-import com.phamkhanh.mapdesign.command.Command;
 import com.phamkhanh.mapdesign.command.HistoryCommand;
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Conveyer;
+import com.phamkhanh.object.ObjectPlayer;
 import com.phamkhanh.object.Map;
 import com.phamkhanh.object.Tile;
 
 public class DesignPanel extends JPanel implements Runnable {
-	
-	
+
 	private static final int PWIDTH = 976; // size of panel
 	private static final int PHEIGHT = 488;
 
@@ -35,31 +30,32 @@ public class DesignPanel extends JPanel implements Runnable {
 	private volatile boolean isPaused = false;
 
 	// Time in ns to Run a Iteration Game
-	private int period = 1000000000 / MapEngine.FPS; 
-	
+	private int period = 1000000000 / MapEngine.FPS;
+
 	// Global variables for off-screen rendering
 	private Graphics dbg;
 	private Image dbImage = null;
-	
+
 	// History List
 	public HistoryCommand history;
 
 	// Background Image
 	private BufferedImage bgImage = null;
-	
+
 	// Design Element
-	private Map map; 
+	private Map map;
 	private Tile tileSelected;
-	
+
 	// Design State
 	public volatile boolean isPressed;
 	public volatile boolean isDragged;
-	public Point ptMouse;  // Currently Mouse Coordinate in Pixel (Always Update by mouseMoved Event) 
-	public Point ptHeadPixel;   // Mouse Coordinate in Pixel When Begin Pressing and Dragging Mouse
-	public Point ptTailPixel;   // Mouse Coordinate in Pixel When End Dragging and begin Releasing Mouse
-	
-	
-	
+	public Point ptMouse; // Currently Mouse Coordinate in Pixel (Always Update
+							// by mouseMoved Event)
+	public Point ptHeadPixel; // Mouse Coordinate in Pixel When Begin Pressing
+								// and Dragging Mouse
+	public Point ptTailPixel; // Mouse Coordinate in Pixel When End Dragging and
+								// begin Releasing Mouse
+
 	public Map getMap() {
 		return map;
 	}
@@ -77,30 +73,30 @@ public class DesignPanel extends JPanel implements Runnable {
 	}
 
 	public DesignPanel() {
-		
+
 		setDoubleBuffered(false);
-	    setBackground(Color.black);
+		setBackground(Color.black);
 		setPreferredSize(new Dimension(PWIDTH, PHEIGHT));
 
 		setFocusable(true);
 		requestFocus(); // Jpanel now receives key events
 		readyForTermination();
-		
+
 		history = new HistoryCommand();
-		
+
 		// Initialize Background Image
 		bgImage = ImageLoader.loadImage("background.jpg");
-		
+
 		// Initialize Design Elements (Changeable Through Commands)
 		map = new Map();
 		tileSelected = null;
-		
+
 		// Initialize Design State
 		isPressed = false;
 		isDragged = false;
-		ptMouse = new Point(-100,-100);
-		ptHeadPixel = new Point(-100,-100);
-		ptTailPixel = new Point(-100,-100);
+		ptMouse = new Point(-100, -100);
+		ptHeadPixel = new Point(-100, -100);
+		ptTailPixel = new Point(-100, -100);
 
 		// Listen Mouse Event To Act Command
 		MouseHandler listener = new MouseHandler(this);
@@ -118,20 +114,17 @@ public class DesignPanel extends JPanel implements Runnable {
 						|| (keyCode == KeyEvent.VK_C && e.isControlDown())) {
 					running = false;
 				}
-				if(keyCode == KeyEvent.VK_Z && e.isControlDown()){
+				if (keyCode == KeyEvent.VK_Z && e.isControlDown()) {
 					history.undo();
 				}
-				if(keyCode == KeyEvent.VK_R && e.isControlDown()){
+				if (keyCode == KeyEvent.VK_R && e.isControlDown()) {
 					history.redo();
 				}
 			}
 		});
 	}
 
-
-	/*
-	 * Wait for the JPanel to be added to the JFrame/JApplet before starting
-	 */
+	// Wait for the JPanel to be added to the JFrame/JApplet before starting
 	public void addNotify() {
 		super.addNotify();
 		startDesign();
@@ -161,10 +154,10 @@ public class DesignPanel extends JPanel implements Runnable {
 	@Override
 	/* Repeatedly update,render,sleep. */
 	public void run() {
-		long beforeTime, afterTime, timeDiff, sleepTime;   // ns
-		long overSleepTime = 0L;   // ns
+		long beforeTime, afterTime, timeDiff, sleepTime; // ns
+		long overSleepTime = 0L; // ns
 		int noDelays = 0;
-		long excess = 0L;  // ns
+		long excess = 0L; // ns
 
 		beforeTime = System.nanoTime();
 
@@ -218,11 +211,12 @@ public class DesignPanel extends JPanel implements Runnable {
 	// Update Design state
 	private void designUpdate() {
 		if (!isPaused && !designEnd) {
-			
+			ObjectPlayer.getInstance().updateStick();
 		}
 	}
 
-	// draw the current frame to an image buffer (secondary image) use graphics of image
+	// draw the current frame to an image buffer (secondary image) use graphics
+	// of image
 	// size of image buffer == size of screen
 	private void designRender() {
 		if (dbImage == null) {
@@ -239,42 +233,53 @@ public class DesignPanel extends JPanel implements Runnable {
 		dbg.setColor(Color.white);
 		dbg.fillRect(0, 0, PWIDTH, PHEIGHT);
 
-		
 		// Draw background image
 		dbg.drawImage(bgImage, 0, 0, null);
-		
+
 		// Draw map and its element
 		map.draw(dbg);
-		
-		// Draw tileSelected at toa do chuot,sao cho chuot nam o tam cua tileSelected
-		if(tileSelected != null){
+
+		// Draw tileSelected at toa do chuot,sao cho chuot nam o tam cua
+		// tileSelected
+		if (tileSelected != null) {
 			tileSelected.setPtMap(MapEngine.mouseMap(ptMouse));
 			tileSelected.draw(dbg);
 		}
-		
+
 		// Draw doan conveyer khi nguoi dung drag chuot dung huong
-		if(tileSelected != null && tileSelected.getClass() == Conveyer.class){
-			if(isDragged){
+		if (tileSelected != null && tileSelected.getClass() == Conveyer.class) {
+			if (isDragged) {
 				Point ptMapHead = MapEngine.mouseMap(ptHeadPixel);
 				Point ptMapTail = MapEngine.mouseMap(ptTailPixel);
-				Direction direction = MapEngine.tileDirecter(ptMapHead, ptMapTail); 
-				if(direction != null){
-					do{
+				Direction direction = MapEngine.tileDirecter(ptMapHead,
+						ptMapTail);
+				if (direction == Direction.SOUTHEAST
+						|| direction == Direction.SOUTHWEST) {
+					do {
 						tileSelected.setPtMap(ptMapHead);
 						tileSelected.draw(dbg);
-						if(ptMapHead.x == ptMapTail.x && ptMapHead.y == ptMapTail.y) break;
+						if (ptMapHead.x == ptMapTail.x
+								&& ptMapHead.y == ptMapTail.y)
+							break;
 						ptMapHead = MapEngine.tileWalker(ptMapHead, direction);
-					}while(true);
+					} while (true);
+				}else if(direction == Direction.NORTHEAST || direction == Direction.NORTHWEST){
+					do {
+						tileSelected.setPtMap(ptMapTail);
+						tileSelected.draw(dbg);
+						if (ptMapHead.x == ptMapTail.x
+								&& ptMapHead.y == ptMapTail.y)
+							break;
+						ptMapTail = MapEngine.tileWalker(ptMapTail, MapEngine.reverseDirection(direction));
+					} while (true);
 				}
 			}
 		}
-		
+
 		if (designEnd) {
-			
+
 		}
 	}
-
-	
 
 	// actively render the buffer image to the screen size (PWITH, PHEIGHT)
 	private void paintScreen() {
@@ -298,19 +303,12 @@ public class DesignPanel extends JPanel implements Runnable {
 	public void resumeDesign() {
 		isPaused = false;
 	}
-	
-	
 
 	@Override
 	public String toString() {
 		return "DesignPanel [map=" + map + ", tileSelected=" + tileSelected
 				+ ", isPressed=" + isPressed + ", isDragged=" + isDragged
-				+ ", ptMouse=" + ptMouse + ", ptHead=" + ptHeadPixel + ", ptTail="
-				+ ptTailPixel + "]";
+				+ ", ptMouse=" + ptMouse + ", ptHead=" + ptHeadPixel
+				+ ", ptTail=" + ptTailPixel + "]";
 	}
-
-	// More methods,explained later..
-	
-	
-
 }

@@ -2,7 +2,6 @@ package com.phamkhanh.mapengine;
 
 import java.awt.Point;
 
-
 /**
  * Staggered isometric tile map engine
  * 
@@ -13,8 +12,8 @@ public class MapEngine {
 	public static final int FPS = 40;
 	public static final int TILEWIDTH = 32;
 	public static final int TILEHEIGHT = 16;
-	private static int[][] mouseMapTable = getMouseMapTable(TILEWIDTH, TILEHEIGHT);
-
+	private static int[][] mouseMapTable = getMouseMapTable(TILEWIDTH,
+			TILEHEIGHT);
 
 	/**
 	 * Exchange world map ordinate to pixel ordinate
@@ -83,11 +82,11 @@ public class MapEngine {
 		ptMouseMapFine.x = ptMouse.x % TILEWIDTH;
 		ptMouseMapFine.y = ptMouse.y % TILEHEIGHT;
 		// Adjust for negative fine coordinates
-		if(ptMouseMapFine.x < 0){
+		if (ptMouseMapFine.x < 0) {
 			ptMouseMapFine.x += TILEWIDTH;
 			ptMouseMapCoarse.x--;
 		}
-		if(ptMouseMapFine.y < 0){
+		if (ptMouseMapFine.y < 0) {
 			ptMouseMapFine.y += TILEHEIGHT;
 			ptMouseMapCoarse.y--;
 		}
@@ -122,39 +121,70 @@ public class MapEngine {
 
 		return ptMap;
 	}
-	
+
 	/**
-	 *  Tra ve huong tu ptHead den ptTail
+	 * Tra ve huong tu ptHead den ptTail
+	 * 
 	 * @param ptHead
-	 * 			 Toa do o bat dau
+	 *            Toa do o bat dau
 	 * @param ptTail
-	 * 			 Toa do o ket thuc
-	 * @return   Huong can tim
+	 *            Toa do o ket thuc
+	 * @return Huong can tim
 	 */
-	public static Direction tileDirecter(final Point ptHead, final Point ptTail){
+	public static Direction tileDirecter(final Point ptHead, final Point ptTail) {
 		Point ptHeadPixel = MapEngine.tilePlotter(ptHead);
 		Point ptTailPixel = MapEngine.tilePlotter(ptTail);
-		int deltaX= ptTailPixel.x - ptHeadPixel.x;
-		int deltaY= ptTailPixel.y - ptHeadPixel.y;
-		
-		if(deltaX == 0 && deltaY == 0) return Direction.SOUTHEAST;
-		if(deltaX == 0){
-			if(deltaY > 0) return Direction.SOUTH;
-			else if(deltaY < 0) return Direction.NORTH;
+		int deltaX = ptTailPixel.x - ptHeadPixel.x;
+		int deltaY = ptTailPixel.y - ptHeadPixel.y;
+
+		if (deltaX == 0 && deltaY == 0)
+			return Direction.SOUTHEAST;
+		if (deltaX == 0) {
+			if (deltaY > 0)
+				return Direction.SOUTH;
+			else if (deltaY < 0)
+				return Direction.NORTH;
 		}
-		if(deltaY == 0){
-			if(deltaX > 0) return Direction.EAST;
-			else if(deltaX < 0) return Direction.WEST;
+		if (deltaY == 0) {
+			if (deltaX > 0)
+				return Direction.EAST;
+			else if (deltaX < 0)
+				return Direction.WEST;
 		}
-		if(deltaX != 0 && deltaY != 0){
-			if(Math.abs(deltaX)*TILEHEIGHT == Math.abs(deltaY)*TILEWIDTH){
-				if(deltaX > 0 && deltaY > 0) return Direction.SOUTHEAST;
-				else if(deltaX > 0 && deltaY < 0) return Direction.NORTHEAST;
-				else if(deltaX < 0 && deltaY > 0) return Direction.SOUTHWEST;
-				else if(deltaX < 0 && deltaY < 0) return Direction.NORTHWEST;
+		if (deltaX != 0 && deltaY != 0) {
+			if (Math.abs(deltaX) * TILEHEIGHT == Math.abs(deltaY) * TILEWIDTH) {
+				if (deltaX > 0 && deltaY > 0)
+					return Direction.SOUTHEAST;
+				else if (deltaX > 0 && deltaY < 0)
+					return Direction.NORTHEAST;
+				else if (deltaX < 0 && deltaY > 0)
+					return Direction.SOUTHWEST;
+				else if (deltaX < 0 && deltaY < 0)
+					return Direction.NORTHWEST;
 			}
 		}
-		
+
+		return null;
+	}
+	
+	// Tra ve huong nguoc lai cua tham so
+	public static Direction reverseDirection(Direction direct) {
+		if (direct == Direction.NORTHEAST)
+			return Direction.SOUTHWEST;
+		if (direct == Direction.SOUTHWEST)
+			return Direction.NORTHEAST;
+		if (direct == Direction.SOUTHEAST)
+			return Direction.NORTHWEST;
+		if (direct == Direction.NORTHWEST)
+			return Direction.SOUTHEAST;
+		if(direct == Direction.NORTH)
+			return Direction.SOUTH;
+		if(direct == Direction.SOUTH)
+			return Direction.NORTH;
+		if(direct == Direction.WEST)
+			return Direction.EAST;
+		if(direct == Direction.EAST)
+			return Direction.WEST;
 		return null;
 	}
 
@@ -196,6 +226,6 @@ public class MapEngine {
 	public static void main(String[] args) {
 		System.out.println(MapEngine.tileWalker(new Point(1, 2),
 				Direction.SOUTHWEST));
-		System.out.println(MapEngine.mouseMap(new Point(100,200)));
+		System.out.println(MapEngine.mouseMap(new Point(100, 200)));
 	}
 }

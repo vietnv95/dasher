@@ -4,16 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
-
 import javax.swing.JFrame;
-
 import com.phamkhanh.image.ImageLoader;
+
 
 public class DesignFrame extends JFrame implements WindowListener, WindowFocusListener{
 	private TilePanel tilePanel;
 	private DesignPanel designPanel;
 	public DesignFrame(){
-		setTitle("TileFrame");
+		setTitle("Design Map");
 		
 		designPanel = new DesignPanel();
 		tilePanel = new TilePanel(designPanel);
@@ -32,7 +31,6 @@ public class DesignFrame extends JFrame implements WindowListener, WindowFocusLi
 	
 	public static void main(String[] args){
 		ImageLoader.loadImage();
-		
 		new DesignFrame();
 	}
 
