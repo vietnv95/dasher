@@ -33,8 +33,7 @@ public class Tile extends Cell {
 
 	@Override
 	public String toString() {
-		return "Tile [toString()=" + super.toString()
-				+ "]";
+		return "Tile [" + super.toString() + "]";
 	}
 
 }

@@ -37,7 +37,7 @@ public class Producer extends Conveyer {
 
 	@Override
 	public String toString() {
-		return "Producer [color=" + color + ", toString()=" + super.toString()
+		return "Producer [color=" + color + "," + super.toString()
 				+ "]";
 	}
 

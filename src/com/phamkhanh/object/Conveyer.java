@@ -61,8 +61,7 @@ public class Conveyer extends Tile {
 
 	@Override
 	public String toString() {
-		return "Conveyer [direction=" + direction + ", toString()="
-				+ super.toString() + "]";
+		return "Conveyer [direction=" + direction+","+ super.toString() + "]";
 	}
 
 }

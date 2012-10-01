@@ -32,35 +32,36 @@ public class MapEngine {
 	/**
 	 * Change map ordinate by direction
 	 * 
-	 * @param ptMap
+	 * @param retPoint
 	 *            Orginal map ordinate
 	 * @param direction
 	 *            Direction to move near tile
 	 * @return After map ordinate
 	 */
 	public static Point tileWalker(Point ptMap, Direction direction) {
+		Point retPoint = (Point) ptMap.clone();
 		if (direction == Direction.EAST)
-			ptMap.x++;
+			retPoint.x++;
 		else if (direction == Direction.WEST)
-			ptMap.x--;
+			retPoint.x--;
 		else if (direction == Direction.NORTH)
-			ptMap.y -= 2;
+			retPoint.y -= 2;
 		else if (direction == Direction.SOUTH)
-			ptMap.y += 2;
+			retPoint.y += 2;
 		else if (direction == Direction.NORTHWEST) {
-			ptMap.x = (ptMap.x - 1 + (ptMap.y & 1));
-			ptMap.y--;
+			retPoint.x = (retPoint.x - 1 + (retPoint.y & 1));
+			retPoint.y--;
 		} else if (direction == Direction.NORTHEAST) {
-			ptMap.x = (ptMap.x + (ptMap.y & 1));
-			ptMap.y--;
+			retPoint.x = (retPoint.x + (retPoint.y & 1));
+			retPoint.y--;
 		} else if (direction == Direction.SOUTHEAST) {
-			ptMap.x = (ptMap.x + (ptMap.y & 1));
-			ptMap.y++;
+			retPoint.x = (retPoint.x + (retPoint.y & 1));
+			retPoint.y++;
 		} else if (direction == Direction.SOUTHWEST) {
-			ptMap.x = (ptMap.x - 1 + (ptMap.y & 1));
-			ptMap.y++;
+			retPoint.x = (retPoint.x - 1 + (retPoint.y & 1));
+			retPoint.y++;
 		}
-		return ptMap;
+		return retPoint;
 	}
 
 	/**
@@ -138,7 +139,7 @@ public class MapEngine {
 		int deltaY = ptTailPixel.y - ptHeadPixel.y;
 
 		if (deltaX == 0 && deltaY == 0)
-			return Direction.SOUTHEAST;
+			return null;
 		if (deltaX == 0) {
 			if (deltaY > 0)
 				return Direction.SOUTH;
@@ -168,23 +169,50 @@ public class MapEngine {
 	}
 	
 	// Tra ve huong nguoc lai cua tham so
-	public static Direction reverseDirection(Direction direct) {
-		if (direct == Direction.NORTHEAST)
-			return Direction.SOUTHWEST;
-		if (direct == Direction.SOUTHWEST)
-			return Direction.NORTHEAST;
-		if (direct == Direction.SOUTHEAST)
-			return Direction.NORTHWEST;
-		if (direct == Direction.NORTHWEST)
-			return Direction.SOUTHEAST;
-		if(direct == Direction.NORTH)
-			return Direction.SOUTH;
-		if(direct == Direction.SOUTH)
-			return Direction.NORTH;
-		if(direct == Direction.WEST)
-			return Direction.EAST;
-		if(direct == Direction.EAST)
-			return Direction.WEST;
+	public static final int LEFT = -1;
+	public static final int RIGHT = 1;
+	public static final int BACK = 0;
+	public static Direction getDirection(Direction direct, int option) {
+		if (direct == Direction.NORTHEAST){
+			if(option == LEFT) return Direction.NORTHWEST;
+			if(option == RIGHT) return Direction.SOUTHEAST;
+			if(option == BACK) return Direction.SOUTHWEST;
+		}
+		if (direct == Direction.SOUTHWEST){
+			if(option == LEFT) return Direction.SOUTHEAST;
+			if(option == RIGHT) return Direction.NORTHWEST;
+			if(option == BACK) return Direction.NORTHEAST;
+		}
+		if (direct == Direction.SOUTHEAST){
+			if(option == LEFT) return Direction.NORTHEAST;
+			if(option == RIGHT) return Direction.SOUTHWEST;
+			if(option == BACK) return Direction.NORTHWEST;
+		}
+		if (direct == Direction.NORTHWEST){
+			if(option == LEFT) return Direction.SOUTHWEST;
+			if(option == RIGHT) return Direction.NORTHEAST;
+			if(option == BACK) return Direction.SOUTHEAST;
+		}
+		if(direct == Direction.NORTH){
+			if(option == LEFT) return Direction.WEST;
+			if(option == RIGHT) return Direction.EAST;
+			if(option == BACK) return Direction.SOUTH;
+		}
+		if(direct == Direction.SOUTH){
+			if(option == LEFT) return Direction.EAST;
+			if(option == RIGHT) return Direction.WEST;
+			if(option == BACK) return Direction.NORTH;
+		}
+		if(direct == Direction.WEST){
+			if(option == LEFT) return Direction.SOUTH;
+			if(option == RIGHT) return Direction.NORTH;
+			if(option == BACK) return Direction.EAST;
+		}
+		if(direct == Direction.EAST){
+			if(option == LEFT) return Direction.NORTH;
+			if(option == RIGHT) return Direction.SOUTH;
+			if(option == BACK) return Direction.WEST;
+		}
 		return null;
 	}
 
