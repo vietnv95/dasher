@@ -37,7 +37,7 @@ public class Consumer extends Conveyer {
 
 	@Override
 	public String toString() {
-		return "Consumer [color=" + color + ", toString()=" + super.toString()
+		return "Consumer [color=" + color + "," + super.toString()
 				+ "]";
 	}
 

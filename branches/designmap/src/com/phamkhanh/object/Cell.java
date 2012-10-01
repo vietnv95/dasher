@@ -37,8 +37,7 @@ public class Cell {
 
 	@Override
 	public String toString() {
-		return "Cell [ptMap=" + ptMap + ", toString()=" + super.toString()
-				+ "]";
+		return "Cell [ptMap=" + ptMap+ "]";
 	}
 
 }

@@ -270,7 +270,7 @@ public class DesignPanel extends JPanel implements Runnable {
 						if (ptMapHead.x == ptMapTail.x
 								&& ptMapHead.y == ptMapTail.y)
 							break;
-						ptMapTail = MapEngine.tileWalker(ptMapTail, MapEngine.reverseDirection(direction));
+						ptMapTail = MapEngine.tileWalker(ptMapTail, MapEngine.getDirection(direction, MapEngine.BACK));
 					} while (true);
 				}
 			}

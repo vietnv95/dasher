@@ -66,7 +66,6 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 					Command add = new AddConveyersCommand(designPanel);
 					add.execute();
 					designPanel.history.add(add);
-					System.out.println(designPanel.history);
 				}
 			}else{
 				// AddProducerCommand OR AddConsumerCommand (User Clicked mouse NOT Drag)
@@ -79,7 +78,6 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 					Command add = new AddConsumerCommand(designPanel);
 					add.execute();
 					designPanel.history.add(add);
-					System.out.println(designPanel.history);
 				}
 			}
 		}

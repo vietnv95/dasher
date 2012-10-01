@@ -3,6 +3,7 @@ package com.phamkhanh.mapdesign.command;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.DesignPanel;
@@ -19,7 +20,7 @@ public class AddConveyersCommand implements Command {
 	private Map map;
 	private List<Cell> before = new ArrayList<Cell>();
 	private List<Cell> after = new ArrayList<Cell>();
-	private Direction direction;
+	private Direction direct;
 	private Point ptHead;
 	private Point ptTail;
 
@@ -27,93 +28,207 @@ public class AddConveyersCommand implements Command {
 		map = designPanel.getMap();
 		ptHead = MapEngine.mouseMap(designPanel.ptHeadPixel);
 		ptTail = MapEngine.mouseMap(designPanel.ptTailPixel);
-		direction = MapEngine.tileDirecter(ptHead, ptTail);
-		if (direction != null) {
+		direct = MapEngine.tileDirecter(ptHead, ptTail);
+		
+		Point ptNext = (Point) ptHead.clone();  // Biến chạy dùng để duyệt từ ptHead -> ptTail
+		if (direct != null) {
+			// Thêm cell trước ptHead nếu nó là instanceof Conveyer
+			Cell cellBeforeHead = getBeforeHead();
+			if(cellBeforeHead != null) before.add(cellBeforeHead);
+			
+			// Thêm các cell từ ptHead -> ptTail 
 			do {
-				before.add(map.getTileMap()[ptHead.x][ptHead.y]);
-				if (ptHead.equals(ptTail))
+				before.add(map.getCell(ptNext));
+				if (ptNext.equals(ptTail))
 					break;
-				ptHead = MapEngine.tileWalker(ptHead, direction);
+				ptNext = MapEngine.tileWalker(ptNext, direct);
 			} while (true);
+			
+			// Thêm cell sau ptTail nếu nó là instanceof Conveyer
+			Cell cellAfterTail = getAfterTail();
+			if(cellAfterTail != null) before.add(cellAfterTail);
 		}
+	}
+	
+	/** Lấy về ô đằng trước ptHead ngược hướng direction. */
+	private Cell getBeforeHead(){
+		Point ptBeforeHead = MapEngine.tileWalker(ptHead, MapEngine.getDirection(direct, MapEngine.BACK));
+		Cell cellBeforeHead = map.getCell(ptBeforeHead);
+		if(cellBeforeHead instanceof Conveyer) return cellBeforeHead;
+		else return null;
+	}
+	
+	/** Lấy về ô ngay sau ptTail theo hướng direction. */
+	private Cell getAfterTail(){
+		Point ptAfterTail = MapEngine.tileWalker(ptTail, direct);
+		Cell cellAfterTail = map.getCell(ptAfterTail);
+		if(cellAfterTail instanceof Conveyer) return cellAfterTail;
+		else return null;
 	}
 
 	@Override
 	public void execute() {
-		// Duyet tung o trong ArrayList before
+		// Duyệt từng ô trong mảng before
 		for (Cell cell : before) {
 			int x = cell.getPtMap().x;
 			int y = cell.getPtMap().y;
 			map.getTileMap()[x][y] = new Conveyer(new Point(x, y),
-					ImageLoader.getImage("conveyer.png"), direction);
+					ImageLoader.getImage("conveyer.png"), direct);
 		}
 
-		// Update Cell
+		// Conveyers chạy từ đầu đến cuối mảng before, được update lại
+		for(int i = 0; i < before.size(); i++){
+			if(i == 0){
+				changeHead(before.get(i), direct);
+			}else if(i == before.size()-1){
+				changeTail(before.get(i), direct);
+			}else{
+				changeMiddle(before.get(i), direct);
+			}	
+		}
+
+		// Lưu trữ lại thông tin sau khi thay đổi, để tạo lệnh undo,redo
 		for (Cell cell : before) {
-			int x = cell.getPtMap().x;
-			int y = cell.getPtMap().y;
-			map.getTileMap()[x][y] = changeCell(map.getTileMap()[x][y]);
-			after.add(map.getTileMap()[x][y]);
+			after.add(map.getCell(cell.getPtMap()));
 		}
 		
-		System.out.println("Before:"+before);
-		System.out.println("After:"+after);
+		// Log lại thông tin để test
+		System.out.println("before:"+before);
+		System.out.println("after:"+after);
 	}
 
-	private Cell changeCell(Cell cell) {
-		int x = cell.getPtMap().x;
-		int y = cell.getPtMap().y;
+	private void changeHead(Cell cell, Direction direction) {
+		TreeSet<Direction> directions = new TreeSet<Direction>();
+		directions.add(direction);
+		
+		Direction left = MapEngine.getDirection(direction, MapEngine.LEFT);
+		Direction right = MapEngine.getDirection(direction, MapEngine.RIGHT);
+		Direction back = MapEngine.getDirection(direction, MapEngine.BACK);
+		
+		int isLeft = testDirection(cell, left);
+		int isRight = testDirection(cell, right);
+		int isBack = testDirection(cell, back);
+		
+		if (isLeft == 1)
+			directions.add(left);
+		if (isRight == 1)
+			directions.add(right);
+		if(isBack == 1)
+			directions.add(back);
 
-		int nw, ne, se, sw;
-		nw = getDirection(cell, Direction.NORTHWEST);
-		ne = getDirection(cell, Direction.NORTHEAST);
-		se = getDirection(cell, Direction.SOUTHEAST);
-		sw = getDirection(cell, Direction.SOUTHWEST);
-
-		ArrayList<Direction> directions = new ArrayList<Direction>();
-		if (nw == 1)
-			directions.add(Direction.NORTHWEST);
-		if (ne == 1)
-			directions.add(Direction.SOUTHEAST);
-		if (se == 1)
-			directions.add(Direction.SOUTHEAST);
-		if (sw == 1)
-			directions.add(Direction.SOUTHWEST);
-
-		if (directions.size() > 1)
-			return new Controller(new Point(x, y),
-					ImageLoader.getImage("ne.png"), directions.get(0),
-					directions);
-		else return cell;
+		
+		int nGates = 1; // số cổng có thể vào hoặc ra ô cell
+		if(isLeft != 0) nGates++;
+		if(isRight != 0) nGates++;
+		if(isBack != 0) nGates++;
+		
+		if (nGates >= 3) {
+			int x = cell.getPtMap().x;
+			int y = cell.getPtMap().y;
+			map.getTileMap()[x][y] = new Controller(new Point(x, y),
+					null, direction, directions);
+		}else if(nGates == 2){
+			// Có 2 trường hợp
+			// TH1. isBack != 0 : Conveyer bình thường
+			// TH2. isLeft != 0 || isRight != 0 : Conveyer ngã rẽ
+		}else{  // nGates == 1
+			// Do nothing
+		}
 	}
 
-	// Xet kha nang di toi o canh no cua cell
-	private int getDirection(Cell cell, Direction direct) {
-		int x = cell.getPtMap().x;
-		int y = cell.getPtMap().y;
-		Point ptMap = MapEngine.tileWalker(new Point(x, y), direct);
-		Cell nearCell = map.getTileMap()[ptMap.x][ptMap.y];
+	private void changeTail(Cell cell, Direction direction) {
+		TreeSet<Direction> directions = new TreeSet<Direction>();
+		directions.add(direction);
+		
+		Direction left = MapEngine.getDirection(direction, MapEngine.LEFT);
+		Direction right = MapEngine.getDirection(direction, MapEngine.RIGHT);
+		Direction front = direction;
+		
+		int isLeft = testDirection(cell, left);
+		int isRight = testDirection(cell, right);
+		int isFront = testDirection(cell, front);
+		
+		if (isLeft == 1)
+			directions.add(left);
+		if (isRight == 1)
+			directions.add(right);
+		if(isFront == 1)
+			directions.add(front);
 
-		if (nearCell.getClass() == Cell.class || nearCell.getClass() == Tile.class) {
+		
+		int nGates = 1; // số cổng có thể vào hoặc ra ô cell
+		if(isLeft != 0) nGates++;
+		if(isRight != 0) nGates++;
+		if(isFront != 0) nGates++;
+		
+		if (nGates >= 3) {
+			int x = cell.getPtMap().x;
+			int y = cell.getPtMap().y;
+			map.getTileMap()[x][y] = new Controller(new Point(x, y),
+					null, direction, directions);
+		}else if(nGates == 2){
+			// Có 2 trường hợp
+			// TH1. isFront != 0 : Conveyer bình thường
+			// TH2. isLeft != 0 || isRight != 0 : Conveyer ngã rẽ
+		}else{  // nGates == 1
+			// Do nothing
+		}
+	}
+
+	private void changeMiddle(Cell cell, Direction direction) {
+		TreeSet<Direction> directions = new TreeSet<Direction>();
+		directions.add(direction);
+		
+		Direction left = MapEngine.getDirection(direction, MapEngine.LEFT);
+		Direction right = MapEngine.getDirection(direction, MapEngine.RIGHT);
+		
+		int isLeft = testDirection(cell, left);
+		int isRight = testDirection(cell, right);
+		
+		if (isLeft == 1)
+			directions.add(left);
+		if (isRight == 1)
+			directions.add(right);
+
+		if (isLeft != 0 || isRight != 0) {
+			int x = cell.getPtMap().x;
+			int y = cell.getPtMap().y;
+			map.getTileMap()[x][y] = new Controller(new Point(x, y),
+					null, direction, directions);
+		}
+	}
+
+	/** Kiểm tra hướng của ô nằm cạnh ô cell (về hướng direct)
+	 * @param cell
+	 * @param direct
+	 * @return 1 nếu hướng đó hướng ra khỏi cell (tức cùng hướng với direct)
+	 *         -1 nếu hướng đó hướng đi vào cell (tức ngược hướng với direct)
+	 *         0 nếu hướng đó không cùng phương với direct (không hướng ra cũng chẳng hướng vào cell)
+	 */        
+	private int testDirection(Cell cell, Direction direct) {
+		Point ptMap = MapEngine.tileWalker(cell.getPtMap(), direct);
+		Cell nearCell = map.getCell(ptMap);
+
+		if (nearCell.getClass() == Cell.class
+				|| nearCell.getClass() == Tile.class) {
 			return 0;
 		} else if (nearCell.getClass() == Conveyer.class) {
-			if (((Conveyer) nearCell).getDirection() == MapEngine.reverseDirection(direct))
-				return -1;
-			else
+			Direction d = ((Conveyer) nearCell).getDirection();
+			if (d.equals(direct))
 				return 1;
+			else if(d.equals(MapEngine.getDirection(direct, MapEngine.BACK))) return -1;
+			else return 0;
+				
 		} else if (nearCell.getClass() == Controller.class) {
-			ArrayList<Direction> directions = ((Controller) nearCell)
+			TreeSet<Direction> directions = ((Controller) nearCell)
 					.getDirections();
-			if (directions.size() == 1
-					&& directions.get(0) == MapEngine.reverseDirection(direct))
-				return -1;
-			else
+			if (directions.contains(direct))
 				return 1;
+			else if(directions.contains(MapEngine.getDirection(direct, MapEngine.BACK))) return -1;
+			else return 0;
 		} else
 			return 0;
 	}
-
-	
 
 	@Override
 	public void undo() {

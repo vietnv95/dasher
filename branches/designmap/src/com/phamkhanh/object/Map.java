@@ -25,6 +25,22 @@ public class Map {
 		
 	}
 	
+	public Cell getCell(Point point){
+		try{
+			return tileMap[point.x][point.y];
+		}catch(Exception e){
+			return null;
+		}
+	}
+	
+	public Cell getCell(int x, int y){
+		try{
+			return tileMap[x][y];
+		}catch(Exception e){
+			return null;
+		}
+	}
+	
 	public Cell[][] getTileMap() {
 		return tileMap;
 	}
@@ -61,6 +77,12 @@ public class Map {
 			}
 		}
 		
+	}
+	
+	/** Lưu thông tin bản đồ vào trong một file đại diện bởi đối tượng File. */
+	public boolean save(File file){
+		
+		return false;
 	}
 	
 }
