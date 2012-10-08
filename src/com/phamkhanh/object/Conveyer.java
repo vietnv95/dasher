@@ -10,6 +10,12 @@ import com.phamkhanh.mapengine.MapEngine;
 public class Conveyer extends Tile {
 
 	private Direction direction;
+	
+	private int type;
+	
+	public static final int CONVEYER = 0;
+	public static final int TURN_LEFT = -1;
+	public static final int TURN_RIGHT = 1;
 
 	private ObjectPlayer player;
 
@@ -21,7 +27,14 @@ public class Conveyer extends Tile {
 		super(ptMap, image);
 		this.direction = direction;
 		this.player = ObjectPlayer.getInstance();
+		this.type = CONVEYER;
 	}
+	
+	public Conveyer(Point ptMap, BufferedImage image, Direction direction, int type){
+		this(ptMap, image, direction);
+		this.type = type;
+	}
+	
 
 	public Direction getDirection() {
 		return direction;
@@ -33,6 +46,11 @@ public class Conveyer extends Tile {
 
 	@Override
 	public void draw(Graphics g) {
+		if(type == CONVEYER) drawConveyer(g);
+		else drawBranch(g);
+	}
+	
+	public void drawConveyer(Graphics g){
 		Point ptTile = MapEngine.tilePlotter(getPtMap());
 		g.drawImage(getImage(), ptTile.x - 4, ptTile.y - 2, null);
 
@@ -57,6 +75,10 @@ public class Conveyer extends Tile {
 					ptTile.x + player.getOffset(direction).x,
 					ptTile.y + player.getOffset(direction).y, null);
 		}
+	}
+	
+	public void drawBranch(Graphics g){
+		
 	}
 
 	@Override

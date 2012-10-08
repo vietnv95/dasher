@@ -5,10 +5,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+
 import com.phamkhanh.image.ImageLoader;
 
 
 public class DesignFrame extends JFrame implements WindowListener, WindowFocusListener{
+	private JMenuBar menuBar;
 	private TilePanel tilePanel;
 	private DesignPanel designPanel;
 	public DesignFrame(){
@@ -16,10 +19,11 @@ public class DesignFrame extends JFrame implements WindowListener, WindowFocusLi
 		
 		designPanel = new DesignPanel();
 		tilePanel = new TilePanel(designPanel);
-		
+		menuBar = new MenuBar();
 		
 		getContentPane().add(tilePanel, BorderLayout.WEST);
 		getContentPane().add(designPanel, BorderLayout.CENTER);
+		setJMenuBar(menuBar);
 		
 		addWindowListener(this);
 		addWindowFocusListener(this);

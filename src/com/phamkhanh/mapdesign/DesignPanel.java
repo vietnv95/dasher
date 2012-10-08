@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import com.phamkhanh.image.ImageLoader;
@@ -37,7 +35,7 @@ public class DesignPanel extends JPanel implements Runnable {
 	private Image dbImage = null;
 
 	// History List
-	public HistoryCommand history;
+	private HistoryCommand history;
 
 	// Background Image
 	private BufferedImage bgImage = null;
@@ -54,10 +52,15 @@ public class DesignPanel extends JPanel implements Runnable {
 	public Point ptHeadPixel; // Mouse Coordinate in Pixel When Begin Pressing
 								// and Dragging Mouse
 	public Point ptTailPixel; // Mouse Coordinate in Pixel When End Dragging and
-								// begin Releasing Mouse
+		                      // begin Releasing Mouse
 
+	
 	public Map getMap() {
 		return map;
+	}
+
+	public HistoryCommand getHistory() {
+		return history;
 	}
 
 	public void setMap(Map map) {
@@ -80,7 +83,6 @@ public class DesignPanel extends JPanel implements Runnable {
 
 		setFocusable(true);
 		requestFocus(); // Jpanel now receives key events
-		readyForTermination();
 
 		history = new HistoryCommand();
 
@@ -98,31 +100,16 @@ public class DesignPanel extends JPanel implements Runnable {
 		ptHeadPixel = new Point(-100, -100);
 		ptTailPixel = new Point(-100, -100);
 
-		// Listen Mouse Event To Act Command
-		MouseHandler listener = new MouseHandler(this);
-		addMouseListener(listener);
-		addMouseMotionListener(listener);
+		// Listen Mouse Event
+		MouseHandler mouseHandler = new MouseHandler(this);
+		addMouseListener(mouseHandler);
+		addMouseMotionListener(mouseHandler);
+		
+		// Listen Key Event
+		KeyHandler keyHandler = new KeyHandler(this);
+		addKeyListener(keyHandler);
 	}
 
-	// Listen for ESC, Q, End, Ctrl-C
-	private void readyForTermination() {
-		addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				int keyCode = e.getKeyCode();
-				if (keyCode == KeyEvent.VK_ESCAPE || keyCode == KeyEvent.VK_END
-						|| keyCode == KeyEvent.VK_Q
-						|| (keyCode == KeyEvent.VK_C && e.isControlDown())) {
-					running = false;
-				}
-				if (keyCode == KeyEvent.VK_Z && e.isControlDown()) {
-					history.undo();
-				}
-				if (keyCode == KeyEvent.VK_R && e.isControlDown()) {
-					history.redo();
-				}
-			}
-		});
-	}
 
 	// Wait for the JPanel to be added to the JFrame/JApplet before starting
 	public void addNotify() {
