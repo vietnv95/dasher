@@ -105,6 +105,7 @@ public class AddConveyersCommand implements Command {
 		Direction right = MapEngine.getDirection(direction, MapEngine.RIGHT);
 		Direction back = MapEngine.getDirection(direction, MapEngine.BACK);
 		
+		int isFront = 1;
 		int isLeft = testDirection(cell, left);
 		int isRight = testDirection(cell, right);
 		int isBack = testDirection(cell, back);
@@ -117,20 +118,34 @@ public class AddConveyersCommand implements Command {
 			directions.add(back);
 
 		
-		int nGates = 1; // số cổng có thể vào hoặc ra ô cell
+		int nGates = 0; // số cổng có thể vào hoặc ra ô cell
+		if(isFront != 0) nGates++;
 		if(isLeft != 0) nGates++;
 		if(isRight != 0) nGates++;
 		if(isBack != 0) nGates++;
 		
-		if (nGates >= 3) {
-			int x = cell.getPtMap().x;
-			int y = cell.getPtMap().y;
+		int x = cell.getPtMap().x;
+		int y = cell.getPtMap().y;
+		if (nGates >= 3) {	
 			map.getTileMap()[x][y] = new Controller(new Point(x, y),
 					null, direction, directions);
-		}else if(nGates == 2){
-			// Có 2 trường hợp
-			// TH1. isBack != 0 : Conveyer bình thường
-			// TH2. isLeft != 0 || isRight != 0 : Conveyer ngã rẽ
+		}else if(nGates == 2){ // Chắc chắn có isFront = 1
+			// Có 4 trường hợp
+			// TH1. isBack == -1 : Conveyer bình thường
+			// TH2. isLeft == -1 : Conveyer ngã rẽ trái
+			// TH3. isRight == -1 : Conveyer ngã rẽ phải
+			// Th4. Còn lại, cell có 2 đầu ra nên trở thành Controller
+			if(isBack != -1){
+				map.getTileMap()[x][y] = new Conveyer(new Point(x,y), null, direction);
+			}else if(isLeft == -1){
+				map.getTileMap()[x][y] = new Conveyer(new Point(x,y), null, direction, Conveyer.TURN_LEFT);
+			}else if(isRight == -1){
+				map.getTileMap()[x][y] = new Conveyer(new Point(x,y), null, direction, Conveyer.TURN_RIGHT);
+			}else{
+				map.getTileMap()[x][y] = new Controller(new Point(x, y),
+						null, direction, directions);
+			}
+			
 		}else{  // nGates == 1
 			// Do nothing
 		}
@@ -138,15 +153,16 @@ public class AddConveyersCommand implements Command {
 
 	private void changeTail(Cell cell, Direction direction) {
 		TreeSet<Direction> directions = new TreeSet<Direction>();
-		directions.add(direction);
 		
 		Direction left = MapEngine.getDirection(direction, MapEngine.LEFT);
 		Direction right = MapEngine.getDirection(direction, MapEngine.RIGHT);
 		Direction front = direction;
+		Direction back = MapEngine.getDirection(direction, MapEngine.BACK);
 		
 		int isLeft = testDirection(cell, left);
 		int isRight = testDirection(cell, right);
 		int isFront = testDirection(cell, front);
+		int isBack = -1;
 		
 		if (isLeft == 1)
 			directions.add(left);
@@ -154,18 +170,21 @@ public class AddConveyersCommand implements Command {
 			directions.add(right);
 		if(isFront == 1)
 			directions.add(front);
+		if(isBack == 1)
+			directions.add(back);
 
 		
-		int nGates = 1; // số cổng có thể vào hoặc ra ô cell
+		int nGates = 0; // số cổng có thể vào hoặc ra ô cell
 		if(isLeft != 0) nGates++;
 		if(isRight != 0) nGates++;
 		if(isFront != 0) nGates++;
+		if(isBack != 0) nGates++;
 		
 		if (nGates >= 3) {
 			int x = cell.getPtMap().x;
 			int y = cell.getPtMap().y;
 			map.getTileMap()[x][y] = new Controller(new Point(x, y),
-					null, direction, directions);
+					null, directions.first(), directions);
 		}else if(nGates == 2){
 			// Có 2 trường hợp
 			// TH1. isFront != 0 : Conveyer bình thường

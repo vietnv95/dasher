@@ -65,19 +65,19 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 					// AddConveyersCommand (After User Drag A Conveyer Segment by Certain Direction)
 					Command add = new AddConveyersCommand(designPanel);
 					add.execute();
-					designPanel.history.add(add);
+					designPanel.getHistory().add(add);
 				}
 			}else{
 				// AddProducerCommand OR AddConsumerCommand (User Clicked mouse NOT Drag)
 				if(designPanel.getTileSelected().getClass() == Producer.class){
 					Command add = new AddProducerCommand(designPanel);
 					add.execute();
-					designPanel.history.add(add);
-					System.out.println(designPanel.history);
+					designPanel.getHistory().add(add);
+					System.out.println(designPanel.getHistory());
 				}else if(designPanel.getTileSelected().getClass() == Consumer.class){
 					Command add = new AddConsumerCommand(designPanel);
 					add.execute();
-					designPanel.history.add(add);
+					designPanel.getHistory().add(add);
 				}
 			}
 		}
