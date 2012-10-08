@@ -135,7 +135,7 @@ public class AddConveyersCommand implements Command {
 			// TH2. isLeft == -1 : Conveyer ngã rẽ trái
 			// TH3. isRight == -1 : Conveyer ngã rẽ phải
 			// Th4. Còn lại, cell có 2 đầu ra nên trở thành Controller
-			if(isBack != -1){
+			if(isBack == -1){
 				map.getTileMap()[x][y] = new Conveyer(new Point(x,y), null, direction);
 			}else if(isLeft == -1){
 				map.getTileMap()[x][y] = new Conveyer(new Point(x,y), null, direction, Conveyer.TURN_LEFT);
