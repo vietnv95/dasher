@@ -25,6 +25,9 @@ public class KeyHandler implements KeyListener {
 		if (keyCode == KeyEvent.VK_R && e.isControlDown()) {
 			designPanel.getHistory().redo();
 		}
+		if(keyCode == KeyEvent.VK_S && e.isControlDown()){
+			designPanel.saveMap();
+		}
 	}
 
 	@Override

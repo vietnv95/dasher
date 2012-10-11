@@ -36,4 +36,9 @@ public class Tile extends Cell {
 		return "Tile [" + super.toString() + "]";
 	}
 
+	@Override
+	public String getProperty() {
+		return "1";
+	}
+
 }

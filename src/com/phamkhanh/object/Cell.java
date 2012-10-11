@@ -7,11 +7,10 @@ import com.phamkhanh.mapengine.MapEngine;
 
 public class Cell {
 	private Point ptMap;
-
+	
 	public Cell() {
 
 	}
-
 	public Cell(Point ptMap) {
 		super();
 		this.ptMap = ptMap;
@@ -37,7 +36,11 @@ public class Cell {
 
 	@Override
 	public String toString() {
-		return "Cell [ptMap=" + ptMap+ "]";
+		return "Cell [ptMap=" + ptMap + "]";
+	}
+	
+	public String getProperty(){
+		return "0";
 	}
 
 }

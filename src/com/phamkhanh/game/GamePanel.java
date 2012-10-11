@@ -18,6 +18,7 @@ import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Map;
 
 public class GamePanel extends JPanel implements Runnable {
+	
 	private static final int PWIDTH = 976; // size of panel
 	private static final int PHEIGHT = 488;
 
@@ -127,10 +128,11 @@ public class GamePanel extends JPanel implements Runnable {
 
 		running = true;
 		while (running) {
+			
 			gameUpdate(); // game state is updated
 			gameRender(); // render to a buffer
 			paintScreen(); // draw buffer to screen
-
+			
 			afterTime = System.nanoTime();
 			timeDiff = afterTime - beforeTime;
 			sleepTime = (period - timeDiff) - overSleepTime;
@@ -162,6 +164,7 @@ public class GamePanel extends JPanel implements Runnable {
 			 * without rendering to get the updates/sec nearer to the required
 			 * FPS
 			 */
+			
 			int skips = 0;
 			while ((excess > period) && (skips < MAX_FRAME_SKIPS)) {
 				excess -= period;

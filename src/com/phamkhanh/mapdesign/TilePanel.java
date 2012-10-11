@@ -23,7 +23,6 @@ public class TilePanel extends JPanel {
 	private int indexSelected = -1;
 	private Tile[] tiles = new Tile[numberTile];
 	
-	
 	public TilePanel(final DesignPanel designPanel){
 		setDoubleBuffered(true);
 		setBackground(Color.WHITE);
@@ -61,7 +60,7 @@ public class TilePanel extends JPanel {
 				
 			}
 		});
- 	}
+ 	 }
 
 	@Override
 	protected void paintComponent(Graphics g) {

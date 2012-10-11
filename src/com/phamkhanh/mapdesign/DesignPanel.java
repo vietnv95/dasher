@@ -7,6 +7,9 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.command.HistoryCommand;
@@ -289,6 +292,18 @@ public class DesignPanel extends JPanel implements Runnable {
 
 	public void resumeDesign() {
 		isPaused = false;
+	}
+	
+	public void saveMap(){
+		pauseDesign();
+		try {
+			this.map.save("resources/data/maps/vidu.txt");
+			System.out.println("Thanh cong");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("Khong thanh cong, khong luu duoc map, thu lai");
+			resumeDesign();
+		}
 	}
 
 	@Override
