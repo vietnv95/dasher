@@ -58,6 +58,17 @@ public class Controller extends Conveyer {
 	public String toString() {
 		return "Controller [directions=" + directions + ", "+ super.toString() + "]";
 	}
+
+	@Override
+	public String getProperty() {
+		int sumOfDirect = 0;
+		for(Direction direct : directions){
+			sumOfDirect += direct.getValue();
+		}
+		return "3."+getDirection().getValue()+"-"+sumOfDirect;
+	}
+	
+	
 	
 	
 

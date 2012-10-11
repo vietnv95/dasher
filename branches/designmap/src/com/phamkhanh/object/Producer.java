@@ -41,4 +41,8 @@ public class Producer extends Conveyer {
 				+ "]";
 	}
 
+	@Override
+	public String getProperty() {
+		return "5."+getDirection().getValue();
+	}
 }

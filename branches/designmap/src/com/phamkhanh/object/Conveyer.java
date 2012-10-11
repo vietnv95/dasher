@@ -14,8 +14,8 @@ public class Conveyer extends Tile {
 	private int type;
 	
 	public static final int CONVEYER = 0;
-	public static final int TURN_LEFT = -1;
-	public static final int TURN_RIGHT = 1;
+	public static final int TURN_LEFT = 1;
+	public static final int TURN_RIGHT = 2;
 
 	private ObjectPlayer player;
 
@@ -54,7 +54,7 @@ public class Conveyer extends Tile {
 		Point ptTile = MapEngine.tilePlotter(getPtMap());
 		g.drawImage(getImage(), ptTile.x - 4, ptTile.y - 2, null);
 
-		// direction == null trong trường hợp đối tượng Conveyer là tileSelected
+		// direction == null trong trÆ°á»�ng há»£p Ä‘á»‘i tÆ°á»£ng Conveyer lÃ  tileSelected
 		if (direction == Direction.NORTHWEST) {
 			g.drawImage(ImageLoader.getImage("linenw.png"),
 					ptTile.x + player.getOffset(direction).x,
@@ -84,6 +84,11 @@ public class Conveyer extends Tile {
 	@Override
 	public String toString() {
 		return "Conveyer [direction=" + direction+","+ super.toString() + "]";
+	}
+
+	@Override
+	public String getProperty() {
+		return "2."+direction.getValue()+"-"+type;
 	}
 
 }

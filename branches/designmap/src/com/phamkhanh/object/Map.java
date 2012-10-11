@@ -3,6 +3,8 @@ package com.phamkhanh.object;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 public class Map {
 	// size of map by tile
@@ -79,10 +81,21 @@ public class Map {
 		
 	}
 	
-	/** Lưu thông tin bản đồ vào trong một file đại diện bởi đối tượng File. */
-	public boolean save(File file){
-		
-		return false;
+	/** Luu doi tuong map vao file, neu luu khong thanh cong thi tung Exception
+	 * @throws FileNotFoundException */
+	public void save(String fileName) throws FileNotFoundException{
+		File file = new File(fileName);
+		PrintWriter writer = new PrintWriter(file);
+		for(int y = 0; y < MAPHEIGHT; y++){
+			for(int x = 0; x < MAPWIDTH; x++){
+				writer.print(tileMap[x][y].getProperty()+" ");
+			}
+			writer.println();
+		}
+		writer.close();
 	}
 	
+	public static Map load(String fileName){
+		return null;
+	}
 }

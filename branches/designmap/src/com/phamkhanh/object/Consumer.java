@@ -41,4 +41,10 @@ public class Consumer extends Conveyer {
 				+ "]";
 	}
 
+	@Override
+	public String getProperty() {
+		// TODO Auto-generated method stub
+		return "4";
+	}
+	
 }

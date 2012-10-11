@@ -15,10 +15,12 @@ public class AddConsumerCommand implements Command {
 	private Cell afterConsumer;
 	
 	public AddConsumerCommand(DesignPanel designPanel){
+		
 		map = designPanel.getMap();
 		Point ptMap = MapEngine.mouseMap(designPanel.ptMouse);
 		this.afterConsumer = new Consumer(ptMap, ImageLoader.getImage("consumer.png"), null, null);	
 		this.beforeConsumer = map.getTileMap()[afterConsumer.getPtMap().x][afterConsumer.getPtMap().y];
+		
 	}
 	
 	@Override

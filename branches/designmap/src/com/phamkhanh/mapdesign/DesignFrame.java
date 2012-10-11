@@ -19,8 +19,10 @@ public class DesignFrame extends JFrame implements WindowListener, WindowFocusLi
 		
 		designPanel = new DesignPanel();
 		tilePanel = new TilePanel(designPanel);
+
 		menuBar = new MenuBar();
 		
+
 		getContentPane().add(tilePanel, BorderLayout.WEST);
 		getContentPane().add(designPanel, BorderLayout.CENTER);
 		setJMenuBar(menuBar);
