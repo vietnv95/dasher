@@ -1,8 +1,6 @@
 package com.phamkhanh.mapdesign.command;
 
 import java.awt.Point;
-
-import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.DesignPanel;
 import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Cell;
@@ -18,7 +16,7 @@ public class AddConsumerCommand implements Command {
 		
 		map = designPanel.getMap();
 		Point ptMap = MapEngine.mouseMap(designPanel.ptMouse);
-		this.afterConsumer = new Consumer(ptMap, ImageLoader.getImage("consumer.png"), null, null);	
+		this.afterConsumer = new Consumer(ptMap, null);	
 		this.beforeConsumer = map.getTileMap()[afterConsumer.getPtMap().x][afterConsumer.getPtMap().y];
 		
 	}

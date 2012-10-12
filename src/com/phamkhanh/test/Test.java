@@ -9,6 +9,9 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 		
+		Color cl = Color.gray;
+		
+		System.out.println(cl.getBlue());
 	}
 
 }

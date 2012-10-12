@@ -3,14 +3,16 @@ package com.phamkhanh.object;
 import java.awt.Graphics;
 import java.awt.Point;
 
+import com.phamkhanh.exception.MapErrorException;
 import com.phamkhanh.mapengine.MapEngine;
 
 public class Cell {
 	private Point ptMap;
-	
+
 	public Cell() {
 
 	}
+
 	public Cell(Point ptMap) {
 		super();
 		this.ptMap = ptMap;
@@ -38,9 +40,14 @@ public class Cell {
 	public String toString() {
 		return "Cell [ptMap=" + ptMap + "]";
 	}
-	
-	public String getProperty(){
+
+	public String getProperty() {
 		return "0";
+	}
+
+	public static Object getInstance(String property, Point ptMap)
+			throws MapErrorException {
+		return new Cell(ptMap);
 	}
 
 }

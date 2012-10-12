@@ -1,8 +1,6 @@
 package com.phamkhanh.mapdesign.command;
 
 import java.awt.Point;
-
-import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.DesignPanel;
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
@@ -19,7 +17,7 @@ public class AddProducerCommand implements Command {
 	public AddProducerCommand(DesignPanel designPanel){
 		map = designPanel.getMap();
 		Point ptMap = MapEngine.mouseMap(designPanel.ptMouse);
-		this.afterPro = new Producer(ptMap, ImageLoader.getImage("producer.png"), Direction.SOUTHEAST, null);	
+		this.afterPro = new Producer(ptMap, Direction.SOUTHEAST);	
 		this.beforePro = map.getTileMap()[ptMap.x][ptMap.y];
 	}
 	

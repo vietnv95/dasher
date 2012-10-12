@@ -5,6 +5,10 @@ import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import com.phamkhanh.exception.MapErrorException;
+import com.phamkhanh.exception.SaveNotSuccessException;
 
 public class Map {
 	// size of map by tile
@@ -81,21 +85,55 @@ public class Map {
 		
 	}
 	
-	/** Luu doi tuong map vao file, neu luu khong thanh cong thi tung Exception
-	 * @throws FileNotFoundException */
-	public void save(String fileName) throws FileNotFoundException{
-		File file = new File(fileName);
-		PrintWriter writer = new PrintWriter(file);
-		for(int y = 0; y < MAPHEIGHT; y++){
-			for(int x = 0; x < MAPWIDTH; x++){
-				writer.print(tileMap[x][y].getProperty()+" ");
+	/** 
+	 * Luu doi tuong map vao file, neu luu khong thanh cong thi tung Exception
+	 * @throws FileNotFoundException 
+	 */
+	public void save(String fileName) throws SaveNotSuccessException{
+		try{
+			File file = new File(fileName);
+			PrintWriter writer = new PrintWriter(file);  // Khả năng bung FileNotFoundException
+			for(int y = 0; y < MAPHEIGHT; y++){
+				for(int x = 0; x < MAPWIDTH; x++){
+					writer.print(tileMap[x][y].getProperty()+" ");
+				}
+				writer.println();
 			}
-			writer.println();
+			writer.close();
+		}catch(FileNotFoundException e){
+			throw new SaveNotSuccessException("Lỗi lưu bản đồ, file name không đúng định dạng hoặc không có quyền mở,ghi file");
 		}
-		writer.close();
 	}
 	
-	public static Map load(String fileName){
-		return null;
+	public void load(String fileName) throws MapErrorException{
+		Scanner input = null;
+		try{
+			File file = new File(fileName);
+			input = new Scanner(file);  // Khả năng bung FileNotFoundException
+			for(int y = 0; y < MAPHEIGHT; y++){
+				for(int x = 0; x < MAPWIDTH; x++){
+					String line = input.next(); // Khả năng bung NoSuchElementException | IllegalStateException
+					char id = line.charAt(0);
+					String property = null;
+					if(line.length() > 1){
+						property = line.substring(2);
+					}
+					switch(id){
+					case '0' : break;
+					case '2' : tileMap[x][y] = Conveyer.getInstance(property, new Point(x,y));break;
+					case '3' : tileMap[x][y] = Controller.getInstance(property, new Point(x,y));break;
+					case '4' : tileMap[x][y] = Producer.getInstance(property, new Point(x,y));break;
+					case '5' : tileMap[x][y] = Consumer.getInstance(property, new Point(x, y));break;
+					default : throw new MapErrorException("Bản đồ chứa đối tượng không xác định");
+					}
+				}
+			}
+		}catch(FileNotFoundException | NoSuchElementException | IllegalStateException e){
+			throw new MapErrorException("Không load được bản đồ : không đọc được file hoặc file bị lỗi");
+		} finally {
+			if(input != null){
+				input.close();
+			}
+		}
 	}
 }

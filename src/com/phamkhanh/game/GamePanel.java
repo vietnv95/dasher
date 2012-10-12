@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -13,9 +16,13 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import com.phamkhanh.exception.MapErrorException;
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapengine.MapEngine;
+import com.phamkhanh.object.Cell;
+import com.phamkhanh.object.Controller;
 import com.phamkhanh.object.Map;
+import com.phamkhanh.object.ObjectPlayer;
 
 public class GamePanel extends JPanel implements Runnable {
 	
@@ -39,9 +46,6 @@ public class GamePanel extends JPanel implements Runnable {
 	// Map element
 	private Map map;
 	
-	// More variables, explained later
-	//
-	
 	public GamePanel() {
 		setDoubleBuffered(false);
 	    setBackground(Color.black);
@@ -51,12 +55,31 @@ public class GamePanel extends JPanel implements Runnable {
 		requestFocus(); // Jpanel now receives key events
 		readyForTermination();
 
-		// create game components
-		//
-		
 		// Load background image
 		bgImage = ImageLoader.loadImage("background.jpg");
 		map = new Map();
+		
+		try {
+			map.load("resources/data/maps/vidu.txt");
+		} catch (MapErrorException e) {
+			e.printStackTrace();
+		}
+		
+		// Them su kien cho cac Controller
+		for(int y = 0; y < Map.MAPHEIGHT; y++){
+			for(int x = 0; x < Map.MAPWIDTH; x++){
+				Cell cell = map.getCell(x, y);
+				if(cell != null && cell.getClass() == Controller.class){
+					Controller controller = ((Controller)cell);
+					controller.addActionListener(new ActionListener() {		
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							((Controller)e.getSource()).nextDirection();
+						}
+					});
+				}
+			}
+		}
 
 		// listen for mouse presses
 		addMouseListener(new MouseAdapter() {
@@ -64,6 +87,16 @@ public class GamePanel extends JPanel implements Runnable {
 				testPressed(e.getX(), e.getY());
 			}
 
+			@Override
+			public void mouseClicked(MouseEvent e) {	
+				Point ptMap = MapEngine.mouseMap(e.getPoint());
+				Cell cell = map.getCell(ptMap);
+				if(cell != null && cell.getClass() == Controller.class){
+					((Controller)cell).fireActionEvent();
+					System.out.println(cell);
+				}
+			}
+			
 		});
 	}
 
@@ -83,7 +116,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 	protected void testPressed(int x, int y) {
 		if (!isPaused && !gameOver) {
-			// do something
+			
 		}
 	}
 
@@ -128,7 +161,6 @@ public class GamePanel extends JPanel implements Runnable {
 
 		running = true;
 		while (running) {
-			
 			gameUpdate(); // game state is updated
 			gameRender(); // render to a buffer
 			paintScreen(); // draw buffer to screen
@@ -178,7 +210,7 @@ public class GamePanel extends JPanel implements Runnable {
 	// Update game state
 	private void gameUpdate() {
 		if (!isPaused && !gameOver) {
-			
+			ObjectPlayer.getInstance().updateStick();
 		}
 	}
 
@@ -199,9 +231,6 @@ public class GamePanel extends JPanel implements Runnable {
 		dbg.setColor(Color.white);
 		dbg.fillRect(0, 0, PWIDTH, PHEIGHT);
 
-		// Draw game elements
-		// ..
-		
 		// draw background image
 		dbg.drawImage(bgImage, 0, 0, null);
 		map.draw(dbg);
