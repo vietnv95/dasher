@@ -7,13 +7,12 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
-
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapengine.MapEngine;
+import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Consumer;
 import com.phamkhanh.object.Conveyer;
 import com.phamkhanh.object.Producer;
-import com.phamkhanh.object.Tile;
 
 public class TilePanel extends JPanel {
 	private static final int PWIDTH = 32;
@@ -21,7 +20,7 @@ public class TilePanel extends JPanel {
 	
 	private int numberTile = 3;
 	private int indexSelected = -1;
-	private Tile[] tiles = new Tile[numberTile];
+	private Cell[] tiles = new Cell[numberTile];
 	
 	public TilePanel(final DesignPanel designPanel){
 		setDoubleBuffered(true);
@@ -29,9 +28,9 @@ public class TilePanel extends JPanel {
 		setPreferredSize(new Dimension(PWIDTH, PHEIGHT));
 		
 		// Load tiles
-		tiles[0] = new Conveyer(new Point(0,0), ImageLoader.getImage("conveyer.png"), null);
-		tiles[1] = new Producer(new Point(0,4), ImageLoader.getImage("producer.png"),null, null);
-		tiles[2] = new Consumer(new Point(0,6), ImageLoader.getImage("consumer.png"), null, null);
+		tiles[0] = new Conveyer(new Point(0,0), null);
+		tiles[1] = new Producer(new Point(0,4),null);
+		tiles[2] = new Consumer(new Point(0,6), null);
 		
 		// Handler mouse event
 		addMouseListener(new MouseListener() {
@@ -66,16 +65,16 @@ public class TilePanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		for(int i = 0; i < numberTile; i++){
-			if(i != indexSelected){
-				g.drawImage(tiles[i].getImage(), 0, i*16, null);
-			}else{
+			if(i == indexSelected){
 				// Ve tileSelected voi background mau do de danh dau selected
 				g.setColor(Color.BLACK);
 				g.fillRect(0, i*16, MapEngine.TILEWIDTH, MapEngine.TILEHEIGHT);
 				g.setColor(Color.WHITE);
-				g.drawImage(tiles[i].getImage(), 0, i*16, null);
 			}
 		}
+		g.drawImage(ImageLoader.getImage("conveyer.png"), 0, 0, null);
+		g.drawImage(ImageLoader.getImage("producer.png"), 0, 16, null);
+		g.drawImage(ImageLoader.getImage("consumer.png"), 0, 32, null);
 	}
 	
 	

@@ -7,18 +7,17 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import com.phamkhanh.exception.SaveNotSuccessException;
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.command.HistoryCommand;
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
+import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Conveyer;
 import com.phamkhanh.object.ObjectPlayer;
 import com.phamkhanh.object.Map;
-import com.phamkhanh.object.Tile;
 
 public class DesignPanel extends JPanel implements Runnable {
 
@@ -45,7 +44,7 @@ public class DesignPanel extends JPanel implements Runnable {
 
 	// Design Element
 	private Map map;
-	private Tile tileSelected;
+	private Cell tileSelected;
 
 	// Design State
 	public volatile boolean isPressed;
@@ -70,11 +69,11 @@ public class DesignPanel extends JPanel implements Runnable {
 		this.map = map;
 	}
 
-	public Tile getTileSelected() {
+	public Cell getTileSelected() {
 		return tileSelected;
 	}
 
-	public void setTileSelected(Tile tileSelected) {
+	public void setTileSelected(Cell tileSelected) {
 		this.tileSelected = tileSelected;
 	}
 
@@ -299,7 +298,7 @@ public class DesignPanel extends JPanel implements Runnable {
 		try {
 			this.map.save("resources/data/maps/vidu.txt");
 			System.out.println("Thanh cong");
-		} catch (FileNotFoundException e) {
+		} catch (SaveNotSuccessException e) {
 			e.printStackTrace();
 			System.out.println("Khong thanh cong, khong luu duoc map, thu lai");
 			resumeDesign();

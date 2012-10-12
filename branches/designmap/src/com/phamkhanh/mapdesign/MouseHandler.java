@@ -58,10 +58,13 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 				Point ptHead = MapEngine.mouseMap(designPanel.ptHeadPixel);
 				Point ptTail = MapEngine.mouseMap(designPanel.ptTailPixel);
 				Direction direction = MapEngine.tileDirecter(ptHead, ptTail);
-				if( direction == Direction.SOUTHEAST || 
+				if( (direction == Direction.SOUTHEAST || 
 					direction == Direction.SOUTHWEST ||
 					direction == Direction.NORTHEAST ||
-					direction == Direction.NORTHWEST ){
+					direction == Direction.NORTHWEST) 
+					&&
+					(designPanel.getMap().getCell(ptHead) != null && 
+					designPanel.getMap().getCell(ptTail) != null) ){
 					// AddConveyersCommand (After User Drag A Conveyer Segment by Certain Direction)
 					Command add = new AddConveyersCommand(designPanel);
 					add.execute();

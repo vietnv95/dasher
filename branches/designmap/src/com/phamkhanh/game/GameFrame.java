@@ -7,13 +7,15 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
+import com.phamkhanh.image.ImageLoader;
+
 public class GameFrame extends JFrame implements WindowListener {
 	
 	private GamePanel gamePanel;
 	
 	public GameFrame(){
 		super("Game Demo");
-		
+		ImageLoader.loadImage();
 		Container con = getContentPane(); // default BorderLayout
 		gamePanel = new GamePanel();
 		con.add(gamePanel, BorderLayout.CENTER);

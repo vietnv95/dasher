@@ -3,24 +3,23 @@ package com.phamkhanh.object;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 
-import com.phamkhanh.mapengine.Direction;
+import com.phamkhanh.exception.MapErrorException;
+import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapengine.MapEngine;
 
-public class Consumer extends Conveyer {
+public class Consumer extends Cell {
 	private Color color;
 
 	public Consumer() {
 
 	}
 
-	public Consumer(Point ptMap, BufferedImage image, Direction direction,
-			Color color) {
-		super(ptMap, image, direction);
+	public Consumer(Point ptMap, Color color) {
+		super(ptMap);
 		this.color = color;
 	}
-
+	
 	public Color getColor() {
 		return color;
 	}
@@ -32,19 +31,25 @@ public class Consumer extends Conveyer {
 	@Override
 	public void draw(Graphics g) {
 		Point ptTile = MapEngine.tilePlotter(getPtMap());
-		g.drawImage(getImage(), ptTile.x, ptTile.y, null);
+		g.drawImage(ImageLoader.getImage("consumer.png"), ptTile.x, ptTile.y,
+				null);
 	}
 
 	@Override
 	public String toString() {
-		return "Consumer [color=" + color + "," + super.toString()
-				+ "]";
+		return "Consumer [color=" + color + "," + super.toString() + "]";
 	}
 
 	@Override
 	public String getProperty() {
-		// TODO Auto-generated method stub
-		return "4";
+		StringBuilder result = new StringBuilder();
+		result.append("5");
+		return result.toString();
 	}
-	
+
+	public static Cell getInstance(String property, Point ptMap)
+			throws MapErrorException {
+		return new Consumer(ptMap,null);	
+	}
+
 }

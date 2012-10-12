@@ -1,2 +1,7 @@
 eclipse.preferences.version=1
+encoding//src/com/phamkhanh/mapdesign/command/AddConveyersCommand.java=UTF-8
+encoding//src/com/phamkhanh/object/Consumer.java=UTF-8
+encoding//src/com/phamkhanh/object/Controller.java=UTF-8
 encoding//src/com/phamkhanh/object/Conveyer.java=UTF-8
+encoding//src/com/phamkhanh/object/Map.java=UTF-8
+encoding//src/com/phamkhanh/object/Producer.java=UTF-8
