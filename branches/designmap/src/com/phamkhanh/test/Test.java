@@ -13,5 +13,4 @@ public class Test {
 		
 		System.out.println(cl.getBlue());
 	}
-
 }

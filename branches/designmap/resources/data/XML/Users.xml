@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users numbers="1">
+  <user id="1">
+    <name>dung_harry</name>
+    <password>harry</password>
+    <level>0</level>
+    <score>0</score>
+  </user>
+</users>

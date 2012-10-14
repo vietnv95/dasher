@@ -13,10 +13,10 @@ public class MainFrame extends JFrame{
 	private BarPanel barPanel;
 	private OptionPanel optionPanel;
 	
-	public MainFrame(){
+	public MainFrame(String userName){
 		this.setSize(976,488);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.barPanel = new  BarPanel(this);
+		this.barPanel = new  BarPanel(this, userName);
 		this.optionPanel = new OptionPanel(this);
 		this.setTitle("Game");
 		this.setLayout(new BorderLayout());
@@ -25,20 +25,23 @@ public class MainFrame extends JFrame{
 		this.setVisible(true);
 		this.setResizable(false);
 	}
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		new MainFrame();
-	}
 	
 	public void showBack(){
 		this.barPanel.backLevel(true);
 	}
-
 
 	public void backToLevel(){
 		this.optionPanel.drawLevelButton();
 		this.barPanel.backLevel(false);
 		this.optionPanel.setType(0);
 	
+	}
+	
+	public BarPanel getBarPanel() {
+		return barPanel;
+	}
+	
+	public OptionPanel getOptionPanel() {
+		return optionPanel;
 	}
 }
