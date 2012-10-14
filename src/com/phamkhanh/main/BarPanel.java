@@ -4,12 +4,15 @@ package com.phamkhanh.main;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
+import com.harry.data.GameAccess;
+
 public class BarPanel extends JPanel {
 
-	private String userName = "khoa";
 	private int level;
 	private int point;
 	private JLabel userLabel;
@@ -22,13 +25,12 @@ public class BarPanel extends JPanel {
 	private MainFrame parent;
 	private JButton back;
 
-	public BarPanel(MainFrame parent) {
-		
+	public BarPanel(MainFrame parent, String userName) {
 		this.parent = parent;
 		this.setPreferredSize(new Dimension(976, 40));
 		this.setBackground(Color.gray);
 		this.setLayout(new FlowLayout());
-		this.userLabel = new JLabel("User name:" + this.userName);
+		this.userLabel = new JLabel("User name: " + userName);
 		this.createMap = new JButton("Create Map");
 		this.back = new JButton("Back");
 		this.exit = new JButton("Exit");
@@ -63,7 +65,7 @@ public class BarPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				int result = JOptionPane.showConfirmDialog(null,
-						"Bạn có muốn thoát chương trình?", "Xác nhận",
+						"Do you want exit?", "Ok",
 
 						JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
@@ -71,20 +73,21 @@ public class BarPanel extends JPanel {
 				}
 			}
 		});
-		this.logOut.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				int result = JOptionPane.showConfirmDialog(null, 
-						"Bạn có muốn logout?","Xác nhận", JOptionPane.OK_CANCEL_OPTION);
-				if (result == JOptionPane.OK_OPTION) {
-					// do something
+		
+		handleEvent();
+	}
+	
+	private void handleEvent() {
+		logOut.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				int result = JOptionPane.showConfirmDialog(null, "Do you want logout?", "Ok", JOptionPane.OK_CANCEL_OPTION);
+				
+				if(result == JOptionPane.OK_OPTION) {
+					parent.dispose();
+					GameAccess.getContain().setVisible(true);
 				}
-
 			}
 		});
-
 	}
 	
 	public void backLevel(boolean flag){
@@ -102,14 +105,6 @@ public class BarPanel extends JPanel {
 				parent.backToLevel();
 			}
 		});
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	public int getLevel() {
