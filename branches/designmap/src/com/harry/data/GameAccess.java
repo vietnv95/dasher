@@ -1,7 +1,6 @@
 package com.harry.data;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -14,7 +13,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import com.phamkhanh.main.BarPanel;
 import com.phamkhanh.main.MainFrame;
 
 public class GameAccess {
