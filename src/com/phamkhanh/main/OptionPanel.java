@@ -92,15 +92,7 @@ public class OptionPanel extends JPanel {
 				level = Integer.parseInt(temp.substring(temp.indexOf(':')+1,temp.length()));
 				
 			    parent.showBack();
-				try{
 				
-					BufferedImage buffImage = ImageLoader.loadImage("ball.gif");
-			    	ImageIcon ico = new ImageIcon(buffImage);
-					 btnArray[level-1].setIcon(ico);
-					
-				}catch(Exception ex){
-					
-				}
 				drawMapButton();
 				type = 1;
 			}else{
