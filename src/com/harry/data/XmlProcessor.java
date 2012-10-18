@@ -18,6 +18,11 @@ public class XmlProcessor {
 	
 	private static Document[] docs = new Document[3];
 	
+	public static void main(String[] args) {
+		createFile();
+		createMap(3, "hary");
+	}
+	
 	public XmlProcessor() {
 		createFile();
 	}

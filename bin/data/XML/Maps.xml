@@ -1,2 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<maps numbers="0" />
+<maps numbers="3">
+  <level value="1" numbers="2">
+    <map id="1">
+      <designer>dung_harry</designer>
+      <path>resources/data/maps/level1/map1.1.txt</path>
+      <picture>resources/data/pictures/level1/picture1.1.png</picture>
+    </map>
+    <map id="2">
+      <designer>khanh</designer>
+      <path>resources/data/maps/level1/map1.2.txt</path>
+      <picture>resources/data/pictures/level1/picture1.2.png</picture>
+    </map>
+  </level>
+  <level value="2" numbers="2">
+    <map id="1">
+      <designer>khoa</designer>
+      <path>resources/data/maps/level2/map2.1.txt</path>
+      <picture>resources/data/pictures/level2/picture2.1.png</picture>
+    </map>
+    <map id="2">
+      <designer>khoa</designer>
+      <path>resources/data/maps/level2/map2.2.txt</path>
+      <picture>resources/data/pictures/level2/picture2.2.png</picture>
+    </map>
+  </level>
+  <level value="3" numbers="1">
+    <map id="1">
+      <designer>hary</designer>
+      <path>resources/data/maps/level3/map3.1.txt</path>
+      <picture>resources/data/pictures/level3/picture3.1.png</picture>
+    </map>
+  </level>
+</maps>
