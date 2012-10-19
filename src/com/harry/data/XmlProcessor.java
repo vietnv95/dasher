@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
@@ -15,12 +16,29 @@ public class XmlProcessor {
 	public final static String USERS_PATH = "resources/data/XML/Users.xml";
 	public final static String MAPS_PATH = "resources/data/XML/Maps.xml";
 	public final static String COLLECTIONS_PATH = "resources/data/XML/Collections.xml";
+	public final static int ID_VALUE = 0;
+	public final static int NAME_VALUE = 1;
+	public final static int PASSWORD_VALUE = 2;
+	public final static int LEVEL_VALUE = 3;
+	public final static int SCORE_VALUE = 4;
+	public final static int MAP_PATH = 5;
+	public final static int PICTURE_PATH = 6;
+	public final static int USER_HIGH_SCORE = 7;
+	public final static int HIGH_SCORE = 8;
 	
 	private static Document[] docs = new Document[3];
 	
 	public static void main(String[] args) {
-		createFile();
-		createMap(3, "hary");
+	    //updateScoreUser("dung_harry", 500);
+	    //createUser("cat", "stupid");
+	    updateScoreUser("dung_harry", 1500);
+	    HighScore[] test = getHighScore(5);
+	    
+	    System.out.println(test.length);
+	    
+	    for(int i = 0; i < test.length; i ++) {
+	    	System.out.println((i + 1) +". Player name: " + test[i].getUserName() + ", score: " + test[i].getScore() + ".");
+	    }
 	}
 	
 	public XmlProcessor() {
@@ -261,10 +279,10 @@ public class XmlProcessor {
 		mapChild[0].addContent(new Text(designer));
 		
 		mapChild[1] = new Element("path");
-		mapChild[1].addContent(new Text("resources/data/maps/level" + Integer.toString(level) + "/map" + Integer.toString(level) + "." +  newMap.getAttributeValue("id") + ".txt"));
+		mapChild[1].addContent(new Text("resources/data/maps/level" + Integer.toString(level) + "/map" + Integer.toString(level) + "." + newMap.getAttributeValue("id") + ".txt"));
 		
 		mapChild[2] = new Element("picture");
-		mapChild[2].addContent(new Text("resources/data/pictures/level" + Integer.toString(level) + "/picture" + Integer.toString(level) + "." +  newMap.getAttributeValue("id") + ".png"));
+		mapChild[2].addContent(new Text("resources/data/pictures/level" + Integer.toString(level) + "/picture" + Integer.toString(level) + "." + newMap.getAttributeValue("id") + ".png"));
 		
 		for(int i = 0; i < mapChild.length; i ++) {
 			newMap.addContent(mapChild[i]);
@@ -319,5 +337,73 @@ public class XmlProcessor {
 		}
 		
 		updateDocument(collectionsDocument, COLLECTIONS_PATH);
+	}
+	
+	public static String getPath(int level, int type) {
+		Document mapsDocument = getDocument(MAPS_PATH);
+		Element rootElement = mapsDocument.getRootElement();
+		int valueNext = 0;
+		
+		for(Element eachElement : rootElement.getChildren("level")) {
+			if(eachElement.getAttributeValue("value").equals(Integer.toString(level))) {
+				valueNext = Integer.parseInt(eachElement.getAttributeValue("numbers"));
+				
+				break;
+			}
+		}
+		
+		valueNext ++;
+		
+		if(type == XmlProcessor.MAP_PATH) {
+		    return "resources/data/maps/level" + Integer.toString(level) + "/map" + Integer.toString(level) + "." + Integer.toString(valueNext) + ".txt";
+	    }
+		else if(type == XmlProcessor.PICTURE_PATH) {
+			return "resources/data/pictures/level" + Integer.toString(level) + "/picture" + Integer.toString(level) + "." + Integer.toString(valueNext) + ".png";
+		}
+		else return "";
+	}
+	
+	public static HighScore[] getHighScore(int number) {
+		Document usersDocument = getDocument(USERS_PATH);
+		Element rootElement = usersDocument.getRootElement();
+		int size = Integer.parseInt(rootElement.getAttributeValue("numbers"));
+		Element[] userElement = new Element[size];
+	    Element templeElement = null;
+	    HighScore[] highScore;
+	    int index = 0;
+	    
+	    if(size <= number) {
+	    	highScore = new HighScore[size];
+	    }
+	    else {
+	    	highScore = new HighScore[number];
+	    }
+	    
+	    for(int i = 0; i < highScore.length; i ++) {
+	    	highScore[i] = new HighScore();
+	    }
+	    
+	    for(Element eachElement : rootElement.getChildren("user")) {
+	    	userElement[index] = eachElement;
+	    	
+	    	index ++;
+	    }
+	    
+	    for(int i = 0; i < size; i ++) {
+	    	templeElement = userElement[i];
+	    	for(int j = i + 1; j < size; j ++) {
+	    		if(Integer.parseInt(userElement[i].getChildText("score")) < Integer.parseInt(userElement[j].getChildText("score"))) {
+	    			userElement[i] = userElement[j];
+	    			userElement[j] = templeElement;
+	    			templeElement = userElement[i];
+	    		}
+	    	}
+	    }
+	    
+	    for(int i = 0; i < highScore.length; i ++) {
+	    	highScore[i].setProperties(userElement[i]);
+	    }
+	    
+	    return highScore;
 	}
 }

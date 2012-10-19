@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<maps numbers="3">
+<maps numbers="4">
   <level value="1" numbers="2">
     <map id="1">
       <designer>dung_harry</designer>
@@ -29,6 +29,18 @@
       <designer>hary</designer>
       <path>resources/data/maps/level3/map3.1.txt</path>
       <picture>resources/data/pictures/level3/picture3.1.png</picture>
+    </map>
+  </level>
+  <level value="4" numbers="2">
+    <map id="1">
+      <designer>Harry</designer>
+      <path>resources/data/maps/level4/map4.1.txt</path>
+      <picture>resources/data/pictures/level4/picture4.1.png</picture>
+    </map>
+    <map id="2">
+      <designer>Harry</designer>
+      <path>resources/data/maps/level4/map4.2.txt</path>
+      <picture>resources/data/pictures/level4/picture4.2.png</picture>
     </map>
   </level>
 </maps>

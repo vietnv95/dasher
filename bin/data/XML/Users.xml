@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<users numbers="2">
+<users numbers="6">
   <user id="1">
     <name>dung_harry</name>
     <password>harry</password>
     <level>0</level>
-    <score>0</score>
+    <score>500</score>
   </user>
   <user id="2">
     <name>phamvankhanhbka</name>
     <password>123</password>
     <level>0</level>
     <score>0</score>
+  </user>
+  <user id="3">
+    <name>harry</name>
+    <password>trying</password>
+    <level>0</level>
+    <score>250</score>
+  </user>
+  <user id="4">
+    <name>sky</name>
+    <password>wonderful</password>
+    <level>0</level>
+    <score>750</score>
+  </user>
+  <user id="5">
+    <name>eyes</name>
+    <password>beautiful</password>
+    <level>0</level>
+    <score>1350</score>
+  </user>
+  <user id="6">
+    <name>cat</name>
+    <password>stupid</password>
+    <level>0</level>
+    <score>590</score>
   </user>
 </users>
