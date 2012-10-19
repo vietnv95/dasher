@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 import com.harry.data.GameAccess;
+import com.harry.data.HighScoreFrame;
 
 public class BarPanel extends JPanel {
 
@@ -86,6 +87,12 @@ public class BarPanel extends JPanel {
 					parent.dispose();
 					GameAccess.getContain().setVisible(true);
 				}
+			}
+		});
+		
+		highScore.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				new HighScoreFrame(5);
 			}
 		});
 	}
