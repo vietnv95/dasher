@@ -18,14 +18,14 @@ public class AddProducerCommand implements Command {
 		map = designPanel.getMap();
 		Point ptMap = MapEngine.mouseMap(designPanel.ptMouse);
 		this.afterPro = new Producer(ptMap, Direction.SOUTHEAST);	
-		this.beforePro = map.getTileMap()[ptMap.x][ptMap.y];
+		this.beforePro = map.getCell(ptMap.x, ptMap.y);
 	}
 	
 	@Override
 	public void execute() {	
 		int x = afterPro.getPtMap().x;
 		int y = afterPro.getPtMap().y;
-		map.getTileMap()[x][y] = afterPro;
+		map.setCell(x, y, afterPro);
 		
 		System.out.println("Before:"+beforePro);
 		System.out.println("After:"+afterPro);
@@ -35,14 +35,14 @@ public class AddProducerCommand implements Command {
 	public void undo() {
 		int x = afterPro.getPtMap().x;
 		int y = afterPro.getPtMap().y;
-		map.getTileMap()[x][y] = this.beforePro;
+		map.setCell(x, y, this.beforePro);
 	}
 
 	@Override
 	public void redo() {
 		int x = afterPro.getPtMap().x;
 		int y = afterPro.getPtMap().y;
-		map.getTileMap()[x][y] = this.afterPro;
+		map.setCell(x, y, this.afterPro);
 	}
 
 }

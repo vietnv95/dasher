@@ -9,32 +9,30 @@ import com.phamkhanh.object.Map;
 
 public class AddConsumerCommand implements Command {
 	private Map map;
-	private Cell beforeConsumer;
-	private Cell afterConsumer;
+	private Cell beforeCon;
+	private Cell afterCon;
 	
-	public AddConsumerCommand(DesignPanel designPanel){
-		
-		map = designPanel.getMap();
-		Point ptMap = MapEngine.mouseMap(designPanel.ptMouse);
-		this.afterConsumer = new Consumer(ptMap, null);	
-		this.beforeConsumer = map.getTileMap()[afterConsumer.getPtMap().x][afterConsumer.getPtMap().y];
-		
+	public AddConsumerCommand(DesignPanel pnlDesign){
+		map = pnlDesign.getMap();
+		Point ptMap = MapEngine.mouseMap(pnlDesign.ptMouse);
+		this.afterCon = new Consumer(ptMap, null);	
+		this.beforeCon = map.getCell(afterCon.getPtMap().x, afterCon.getPtMap().y);	
 	}
 	
 	@Override
 	public void execute() {	
-		map.getTileMap()[afterConsumer.getPtMap().x][afterConsumer.getPtMap().y] = afterConsumer;
-		System.out.println("Before:"+beforeConsumer);
-		System.out.println("After:"+afterConsumer);
+		map.setCell(afterCon.getPtMap().x, afterCon.getPtMap().y, afterCon);
+		System.out.println("Before:"+beforeCon);
+		System.out.println("After:"+afterCon);
 	}
 
 	@Override
 	public void undo() {
-		map.getTileMap()[afterConsumer.getPtMap().x][afterConsumer.getPtMap().y] = this.beforeConsumer;
+		map.setCell(afterCon.getPtMap().x, afterCon.getPtMap().y, this.beforeCon);
 	}
 
 	@Override
 	public void redo() {
-		map.getTileMap()[afterConsumer.getPtMap().x][afterConsumer.getPtMap().y] = this.afterConsumer;
+		map.setCell(afterCon.getPtMap().x, afterCon.getPtMap().y, this.afterCon);
 	}
 }

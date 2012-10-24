@@ -11,14 +11,18 @@ import com.phamkhanh.exception.MapErrorException;
 import com.phamkhanh.exception.SaveNotSuccessException;
 
 public class Map {
+	
 	// size of map by tile
 	public static final int MAPWIDTH = 30;
 	public static final int MAPHEIGHT = 60;
-		
+	
+	private boolean saved = false;
+	private File file;
 	private Cell[][] tileMap = new Cell[MAPWIDTH][MAPHEIGHT];
 	
 	// Tao ban do rong
 	public Map(){
+		
 		for(int i = 0; i < MAPWIDTH; i++){
 			for(int j = 0; j < MAPHEIGHT; j++){
 				tileMap[i][j] = new Cell(new Point(i, j));
@@ -26,37 +30,45 @@ public class Map {
 		}
 	}
 	
-	// Doc thong tin ban do tu file
-	public Map(File file){
-		
+	
+	
+	public boolean isSaved() {
+		return saved;
 	}
 	
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+	
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
 	public Cell getCell(Point point){
-		try{
-			return tileMap[point.x][point.y];
-		}catch(Exception e){
-			return null;
-		}
+		return getCell(point.x, point.y);
 	}
 	
 	public Cell getCell(int x, int y){
 		try{
 			return tileMap[x][y];
-		}catch(Exception e){
+		}catch(ArrayIndexOutOfBoundsException e){
 			return null;
 		}
 	}
 	
-	public Cell[][] getTileMap() {
-		return tileMap;
+	public void setCell(int x, int y, Cell cell){
+		try{
+			tileMap[x][y] = cell;	
+		}catch(ArrayIndexOutOfBoundsException e){
+			return;
+		}
 	}
-
-	public void setTileMap(Cell[][] tileMap) {
-		this.tileMap = tileMap;
-	}
-
+	
 	public void draw(Graphics g){
-		
 		for(int y = 0; y < MAPHEIGHT; y++){
 			for(int x = 0; x < MAPWIDTH; x++){
 				if(tileMap[x][y].getClass() == Cell.class){
@@ -89,10 +101,9 @@ public class Map {
 	 * Luu doi tuong map vao file, neu luu khong thanh cong thi tung Exception
 	 * @throws FileNotFoundException 
 	 */
-	public void save(String fileName) throws SaveNotSuccessException{
+	public void save() throws SaveNotSuccessException{
 		try{
-			File file = new File(fileName);
-			PrintWriter writer = new PrintWriter(file);  // Khả năng bung FileNotFoundException
+			PrintWriter writer = new PrintWriter(file);  //FileNotFoundException
 			for(int y = 0; y < MAPHEIGHT; y++){
 				for(int x = 0; x < MAPWIDTH; x++){
 					writer.print(tileMap[x][y].getProperty()+" ");
@@ -105,14 +116,16 @@ public class Map {
 		}
 	}
 	
-	public void load(String fileName) throws MapErrorException{
+	
+	public void load(String filePath) throws MapErrorException{
+		
 		Scanner input = null;
 		try{
-			File file = new File(fileName);
-			input = new Scanner(file);  // Khả năng bung FileNotFoundException
+			this.file = new File(filePath);  // NullPoiterException
+			input = new Scanner(file);  // FileNotFoundException
 			for(int y = 0; y < MAPHEIGHT; y++){
 				for(int x = 0; x < MAPWIDTH; x++){
-					String line = input.next(); // Khả năng bung NoSuchElementException | IllegalStateException
+					String line = input.next(); // NoSuchElementException | IllegalStateException
 					char id = line.charAt(0);
 					String property = null;
 					if(line.length() > 1){
@@ -128,7 +141,7 @@ public class Map {
 					}
 				}
 			}
-		}catch(FileNotFoundException | NoSuchElementException | IllegalStateException e){
+		}catch(NullPointerException | FileNotFoundException | NoSuchElementException | IllegalStateException e){
 			throw new MapErrorException("Không load được bản đồ : không đọc được file hoặc file bị lỗi");
 		} finally {
 			if(input != null){

@@ -6,25 +6,32 @@ import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JToolBar;
 
 import com.phamkhanh.image.ImageLoader;
+import com.phamkhanh.mapdesign.action.ActionFactory;
 
 
 public class DesignFrame extends JFrame implements WindowListener, WindowFocusListener{
+	private String userName;
 	private JMenuBar menuBar;
-	private TilePanel tilePanel;
-	private DesignPanel designPanel;
-	public DesignFrame(){
-		setTitle("Design Map");
+	private JToolBar toolBar;
+	private TileBar tileBar;
+	private TabbedPane tabbedPane;
+	
+	public DesignFrame(String userName){
+		this.userName = userName;
+		setTitle("UserName : "+this.userName);
 		
-		designPanel = new DesignPanel();
-		tilePanel = new TilePanel(designPanel);
-
+		tabbedPane = new TabbedPane();
+		ActionFactory actionFactory = new ActionFactory(tabbedPane);
+		tileBar = new TileBar(tabbedPane);
 		menuBar = new MenuBar();
+		toolBar = new ToolBar(actionFactory);
 		
-
-		getContentPane().add(tilePanel, BorderLayout.WEST);
-		getContentPane().add(designPanel, BorderLayout.CENTER);
+		getContentPane().add(toolBar, BorderLayout.NORTH);
+		getContentPane().add(tileBar, BorderLayout.WEST);
+		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		setJMenuBar(menuBar);
 		
 		addWindowListener(this);
@@ -34,39 +41,53 @@ public class DesignFrame extends JFrame implements WindowListener, WindowFocusLi
 		setResizable(false);
 		setVisible(true);
 	}
-	
-	public static void main(String[] args){
-		ImageLoader.loadImage();
-		new DesignFrame();
-	}
 
+	
+	
+	
 	@Override
-	public void windowActivated(WindowEvent arg0) {designPanel.resumeDesign();}
+	public void windowActivated(WindowEvent arg0) {
+		if(tabbedPane.getPanel() != null)
+			tabbedPane.getPanel().resumeDesign();
+	}
 
 	@Override
 	public void windowClosed(WindowEvent arg0) {System.exit(0);}
 
 	@Override
-	public void windowClosing(WindowEvent arg0) {designPanel.stopDesign(); };
+	public void windowClosing(WindowEvent arg0) {};
 
 	@Override
-	public void windowDeactivated(WindowEvent arg0) {designPanel.pauseDesign();}
+	public void windowDeactivated(WindowEvent arg0) {
+		if(tabbedPane.getPanel() != null)
+			tabbedPane.getPanel().pauseDesign();
+	}
 
 	@Override
-	public void windowDeiconified(WindowEvent arg0) {designPanel.resumeDesign();}
+	public void windowDeiconified(WindowEvent arg0) {
+		if(tabbedPane.getPanel() != null)
+			tabbedPane.getPanel().resumeDesign();
+	}
 
 	@Override
-	public void windowIconified(WindowEvent arg0) {designPanel.pauseDesign();}
+	public void windowIconified(WindowEvent arg0) {
+		if(tabbedPane.getPanel() != null) 
+			tabbedPane.getPanel().pauseDesign();
+	}
 
 	@Override
 	public void windowOpened(WindowEvent arg0) {}
 
 	@Override
 	public void windowGainedFocus(WindowEvent e) {
-		designPanel.requestFocus();
+		if(tabbedPane.getPanel() != null)
+			tabbedPane.getPanel().requestFocus();
 	}
-
 	@Override
-	public void windowLostFocus(WindowEvent e) {	
+	public void windowLostFocus(WindowEvent e) {}
+	
+	public static void main(String[] args){
+		ImageLoader.loadImage();
+		new DesignFrame("dung_harry");
 	}
 }

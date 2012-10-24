@@ -26,18 +26,14 @@ public class KeyHandler implements KeyListener {
 			designPanel.getHistory().redo();
 		}
 		if(keyCode == KeyEvent.VK_S && e.isControlDown()){
-			designPanel.saveMap();
+			
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-		
-	}
+	public void keyTyped(KeyEvent e) {}
 
 }
