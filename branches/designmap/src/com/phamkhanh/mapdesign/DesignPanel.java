@@ -9,7 +9,6 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
-import com.phamkhanh.exception.SaveNotSuccessException;
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.command.HistoryCommand;
 import com.phamkhanh.mapengine.Direction;
@@ -20,17 +19,10 @@ import com.phamkhanh.object.ObjectPlayer;
 import com.phamkhanh.object.Map;
 
 public class DesignPanel extends JPanel implements Runnable {
-
+	private TabbedPane parent;
+	
 	private static final int PWIDTH = 976; // size of panel
 	private static final int PHEIGHT = 488;
-
-	private Thread animator; // for animation
-	private volatile boolean running = false; // stops animation
-	private volatile boolean designEnd = false; // for game termination
-	private volatile boolean isPaused = false;
-
-	// Time in ns to Run a Iteration Game
-	private int period = 1000000000 / MapEngine.FPS;
 
 	// Global variables for off-screen rendering
 	private Graphics dbg;
@@ -55,30 +47,20 @@ public class DesignPanel extends JPanel implements Runnable {
 								// and Dragging Mouse
 	public Point ptTailPixel; // Mouse Coordinate in Pixel When End Dragging and
 		                      // begin Releasing Mouse
+	
+	
+	
+	
+	private Thread animator; // for animation
+	private volatile boolean running = false; // stops animation
+	private volatile boolean designEnd = false; // for game termination
+	private volatile boolean isPaused = false;
 
 	
-	public Map getMap() {
-		return map;
-	}
 
-	public HistoryCommand getHistory() {
-		return history;
-	}
-
-	public void setMap(Map map) {
-		this.map = map;
-	}
-
-	public Cell getTileSelected() {
-		return tileSelected;
-	}
-
-	public void setTileSelected(Cell tileSelected) {
-		this.tileSelected = tileSelected;
-	}
-
-	public DesignPanel() {
-
+	public DesignPanel(TabbedPane parent) {
+		this.parent = parent;
+		
 		setDoubleBuffered(false);
 		setBackground(Color.black);
 		setPreferredSize(new Dimension(PWIDTH, PHEIGHT));
@@ -86,7 +68,7 @@ public class DesignPanel extends JPanel implements Runnable {
 		setFocusable(true);
 		requestFocus(); // Jpanel now receives key events
 
-		history = new HistoryCommand();
+		history = new HistoryCommand(this);
 
 		// Initialize Background Image
 		bgImage = ImageLoader.loadImage("background.jpg");
@@ -111,6 +93,42 @@ public class DesignPanel extends JPanel implements Runnable {
 		KeyHandler keyHandler = new KeyHandler(this);
 		addKeyListener(keyHandler);
 	}
+	
+	public TabbedPane getParent() {
+		return parent;
+	}
+
+	public void setParent(TabbedPane parent) {
+		this.parent = parent;
+	}
+
+	public Image getDbImage() {
+		return dbImage;
+	}
+
+	public void setDbImage(Image dbImage) {
+		this.dbImage = dbImage;
+	}
+
+	public Map getMap() {
+		return map;
+	}
+	
+	public void setMap(Map map) {
+		this.map = map;
+	}
+
+	public HistoryCommand getHistory() {
+		return history;
+	}
+
+	public Cell getTileSelected() {
+		return tileSelected;
+	}
+
+	public void setTileSelected(Cell tileSelected) {
+		this.tileSelected = tileSelected;
+	}
 
 
 	// Wait for the JPanel to be added to the JFrame/JApplet before starting
@@ -131,83 +149,31 @@ public class DesignPanel extends JPanel implements Runnable {
 	public void stopDesign() {
 		running = false;
 	}
+	
+	public void pauseDesign() {
+		isPaused = true;
+	}
 
-	// Number of frames with a delay of 0ms before
-	// the animation thread yields to other running threads
-	private static final int NO_DELAYS_PER_YIELD = 16;
-
-	// no. of frames that can be skipped in any one animation loop
-	// game updated but not rendered
-	private static int MAX_FRAME_SKIPS = 5;
-
-	@Override
-	/* Repeatedly update,render,sleep. */
-	public void run() {
-		long beforeTime, afterTime, timeDiff, sleepTime; // ns
-		long overSleepTime = 0L; // ns
-		int noDelays = 0;
-		long excess = 0L; // ns
-
-		beforeTime = System.nanoTime();
-
-		running = true;
-		while (running) {
-			designUpdate(); // game state is updated
-			designRender(); // render to a buffer
-			paintScreen(); // draw buffer to screen
-
-			afterTime = System.nanoTime();
-			timeDiff = afterTime - beforeTime;
-			sleepTime = (period - timeDiff) - overSleepTime;
-
-			// some time left in this period
-			if (sleepTime > 0) {
-				try {
-					Thread.sleep(sleepTime / 1000000L); // sleep a bit
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				// the actually sleep < sleepTime,=> exist overSleepTime
-				overSleepTime = (System.nanoTime() - afterTime) - sleepTime;
-			} else { // sleepTime <= 0, frame took longer than the period
-				excess -= sleepTime; // store excess time value
-				overSleepTime = 0L;
-				noDelays++;
-				if (noDelays >= NO_DELAYS_PER_YIELD) {
-					Thread.yield(); // give another thread a chance to run
-					noDelays = 0;
-				}
-			}
-
-			beforeTime = System.nanoTime();
-
-			/*
-			 * If frame animation is taking too long, update the game state
-			 * without rendering to get the updates/sec nearer to the required
-			 * FPS
-			 */
-			int skips = 0;
-			while ((excess > period) && (skips < MAX_FRAME_SKIPS)) {
-				excess -= period;
-				designUpdate();
-				skips++;
-			}
-		}
-		System.exit(0);
+	public void resumeDesign() {
+		isPaused = false;
 	}
 
 	// Update Design state
 	private void designUpdate() {
-		if (!isPaused && !designEnd) {
-			ObjectPlayer.getInstance().updateStick();
+		if(isPaused && designEnd){
+			return;
 		}
+		ObjectPlayer.getInstance().updateStick();
 	}
 
 	// draw the current frame to an image buffer (secondary image) use graphics
 	// of image
 	// size of image buffer == size of screen
 	private void designRender() {
+		if(isPaused && designEnd){
+			return;
+		}
+		
 		if (dbImage == null) {
 			dbImage = createImage(PWIDTH, PHEIGHT);
 			if (dbImage == null) {
@@ -272,6 +238,9 @@ public class DesignPanel extends JPanel implements Runnable {
 
 	// actively render the buffer image to the screen size (PWITH, PHEIGHT)
 	private void paintScreen() {
+		if(isPaused && designEnd){
+			return;
+		}
 		Graphics g;
 		try {
 			g = this.getGraphics();
@@ -285,26 +254,78 @@ public class DesignPanel extends JPanel implements Runnable {
 		}
 	}
 
-	public void pauseDesign() {
-		isPaused = true;
-	}
-
-	public void resumeDesign() {
-		isPaused = false;
-	}
 	
-	public void saveMap(){
-		pauseDesign();
-		try {
-			this.map.save("resources/data/maps/vidu.txt");
-			System.out.println("Thanh cong");
-		} catch (SaveNotSuccessException e) {
-			e.printStackTrace();
-			System.out.println("Khong thanh cong, khong luu duoc map, thu lai");
-			resumeDesign();
-		}
-	}
+	
+	
+	// Time in ns to Run a Iteration Game
+	private int period = 1000000000 / MapEngine.FPS;
+	
+	// Number of frames with a delay of 0ms before
+	// the animation thread yields to other running threads
+	private static final int NO_DELAYS_PER_YIELD = 16;
 
+	// no. of frames that can be skipped in any one animation loop
+	// game updated but not rendered
+	private static int MAX_FRAME_SKIPS = 5;
+
+	@Override
+	/* Repeatedly update,render,sleep. */
+	public void run() {
+		long beforeTime, afterTime, timeDiff, sleepTime; // ns
+		long overSleepTime = 0L; // ns
+		int noDelays = 0;
+		long excess = 0L; // ns
+
+		beforeTime = System.nanoTime();
+
+		running = true;
+		while (running) {
+			
+			designUpdate(); // game state is updated
+			designRender(); // render to a buffer
+			paintScreen(); // draw buffer to screen
+			
+
+			afterTime = System.nanoTime();
+			timeDiff = afterTime - beforeTime;
+			sleepTime = (period - timeDiff) - overSleepTime;
+
+			// some time left in this period
+			if (sleepTime > 0) {
+				try {
+					Thread.sleep(sleepTime / 1000000L); // sleep a bit
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				// the actually sleep < sleepTime,=> exist overSleepTime
+				overSleepTime = (System.nanoTime() - afterTime) - sleepTime;
+			} else { // sleepTime <= 0, frame took longer than the period
+				excess -= sleepTime; // store excess time value
+				overSleepTime = 0L;
+				noDelays++;
+				if (noDelays >= NO_DELAYS_PER_YIELD) {
+					Thread.yield(); // give another thread a chance to run
+					noDelays = 0;
+				}
+			}
+
+			beforeTime = System.nanoTime();
+
+			/*
+			 * If frame animation is taking too long, update the game state
+			 * without rendering to get the updates/sec nearer to the required
+			 * FPS
+			 */
+			int skips = 0;
+			while ((excess > period) && (skips < MAX_FRAME_SKIPS)) {
+				excess -= period;
+				designUpdate();
+				skips++;
+			}
+		}
+	}	
+	
 	@Override
 	public String toString() {
 		return "DesignPanel [map=" + map + ", tileSelected=" + tileSelected
