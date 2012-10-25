@@ -32,6 +32,10 @@ public class Controller extends Cell {
 		lock = false;
 	}
 
+	public Direction getDirection(){
+		return directions.get(index);
+	}
+	
 	public ArrayList<Direction> getDirections() {
 		return directions;
 	}

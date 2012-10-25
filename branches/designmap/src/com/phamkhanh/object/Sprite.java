@@ -90,6 +90,20 @@ public abstract class Sprite
 		player.updateStick();
 	}
 	
+	private void updateState(){
+		// Update toa do
+		ptMap = MapEngine.tileWalker(ptMap, direction);
+		
+		// Update huong
+		Cell cell = map.getCell(ptMap);
+		if(cell.getClass() == Conveyer.class){
+			direction = ((Conveyer)cell).getDirection();
+		}else if(cell.getClass() == Controller.class){
+			direction = ((Controller)cell).getDirection();
+		}
+		
+		
+	}
 	
 	
 	private class SpritePlayer {
@@ -145,8 +159,7 @@ public abstract class Sprite
 				// Kiem tra dieu kien trang thai cua Sprite
 				if((animTotalTime + animPeriod) >= seqDuration){
 					// Den vi tri cuoi cung, cap nhat toa do va huong
-					ptMap = MapEngine.tileWalker(ptMap, direction);
-					updateDirection();
+					updateState();
 					animTotalTime = 0;
 				}
 					

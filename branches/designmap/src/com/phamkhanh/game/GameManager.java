@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Queue;
 
 import javax.swing.JPanel;
 
@@ -54,6 +55,7 @@ public class GameManager extends JPanel implements Runnable {
 	private Producer producer;
 	private ArrayList<Consumer> consumers;
 	private ArrayList<Box> boxes;
+	private Queue<Box> queueBox;
 	
 	public GameManager() {
 		setDoubleBuffered(false);
