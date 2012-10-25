@@ -11,13 +11,12 @@ import com.phamkhanh.image.ImageLoader;
 
 public class GameFrame extends JFrame implements WindowListener {
 	
-	private GamePanel gamePanel;
+	private GameManager gamePanel;
 	
 	public GameFrame(){
 		super("Game Demo");
-		ImageLoader.loadImage();
 		Container con = getContentPane(); // default BorderLayout
-		gamePanel = new GamePanel();
+		gamePanel = new GameManager();
 		con.add(gamePanel, BorderLayout.CENTER);
 		
 		addWindowListener(this);
@@ -50,6 +49,7 @@ public class GameFrame extends JFrame implements WindowListener {
 	
 	
 	public static void main(String[] args){
+		ImageLoader.loadImage();
 		new GameFrame();
 	}
 }

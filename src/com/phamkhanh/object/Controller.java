@@ -15,31 +15,45 @@ import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
 
 public class Controller extends Cell {
-	private ArrayList<Direction> directions; // Mang da sap xep huong theo thu tu
-	private int index;                       // Chi so cua cua huong hien tai trong mang
+	private ArrayList<Direction> directions; // Mang da sap xep huong theo thu
+												// tu
+	private int index; // Chi so cua cua huong hien tai trong mang
 	ArrayList<ActionListener> listeners = new ArrayList<>();
 
-	public Controller() {
+	/**
+	 * true neu co box da chiem controller nay false neu nguoc lai
+	 */
+	private boolean lock;
 
-	}
-
-	public Controller(Point ptMap, int index,
-			ArrayList<Direction> directions) {
+	public Controller(Point ptMap, int index, ArrayList<Direction> directions) {
 		super(ptMap);
 		this.index = index;
 		this.directions = directions;
+		lock = false;
 	}
 
 	public ArrayList<Direction> getDirections() {
 		return directions;
 	}
 
+	public boolean isLock() {
+		return lock;
+	}
+
+	public void setLock(boolean lock) {
+		this.lock = lock;
+	}
+
+	public void nextDirection() {
+		this.index = (this.index + 1) % directions.size();
+	}
+
 	@Override
 	public void draw(Graphics g) {
 		Point ptTile = MapEngine.tilePlotter(getPtMap());
 		if (directions.get(index) != null) {
-			g.drawImage(getImage(directions.get(index)), ptTile.x - 8, ptTile.y - 4,
-					null);
+			g.drawImage(getImage(directions.get(index)), ptTile.x - 8,
+					ptTile.y - 4, null);
 		} else {
 			g.drawImage(getImage(directions.get(0)), ptTile.x - 8,
 					ptTile.y - 4, null);
@@ -71,29 +85,20 @@ public class Controller extends Cell {
 		}
 		return ImageLoader.getImage(imgName);
 	}
-	
-	public synchronized void addActionListener(ActionListener listener){
+
+	public synchronized void addActionListener(ActionListener listener) {
 		listeners.add(listener);
 	}
-	
-	public synchronized void removeActionListener(ActionListener listener){
+
+	public synchronized void removeActionListener(ActionListener listener) {
 		listeners.remove(listener);
 	}
-	
-	public  synchronized void fireActionEvent(){
+
+	public synchronized void fireActionEvent() {
 		ActionEvent actionEvent = new ActionEvent(this, 1, "click");
-		for(ActionListener listener: listeners){
+		for (ActionListener listener : listeners) {
 			listener.actionPerformed(actionEvent);
 		}
-	}
-	
-	public void nextDirection(){
-		this.index = (this.index + 1)%directions.size();
-	}
-
-	@Override
-	public String toString() {
-		return "Controller [directions=" + directions + ", " + super.toString()+ "]";
 	}
 
 	@Override
@@ -111,7 +116,7 @@ public class Controller extends Cell {
 			StringTokenizer tokens = new StringTokenizer(property, "-");
 			int index = Integer.parseInt(tokens.nextToken());
 			int sumOfDirect = Integer.parseInt(tokens.nextToken());
-			
+
 			ArrayList<Direction> directions = new ArrayList<>();
 			for (Direction direct : Direction.getDirections()) {
 				if ((sumOfDirect & direct.getValue()) == direct.getValue()) {
@@ -123,6 +128,12 @@ public class Controller extends Cell {
 			throw new MapErrorException(
 					"Thuộc tính của Controller không đúng định dạng");
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "Controller [directions=" + directions + ", " + super.toString()
+				+ "]";
 	}
 
 }

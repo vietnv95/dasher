@@ -4,7 +4,6 @@ import java.awt.*;
 
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
-import java.awt.image.*;
 
 /**
  *  Class Sprite bieu dien mot doi tuong chuyen dong tren ban do,lop superclass box
@@ -18,52 +17,37 @@ import java.awt.image.*;
  * @author Khanh
  *
  */
-public class Sprite 
+public abstract class Sprite 
 {
+	private Map map;
+	
 	private Point ptMap;  // Toa do tile hien tai cua Sprite
 	private Point ptTile;  // Toa do pixel hien tai cua Sprite
 	private int speed;  // Toc do,don vi tile/s
 	private Direction direction;  // Huong di chuyen cua Sprite
-	private BufferedImage image;
 	private boolean active = true;
+	
 	private SpritePlayer player;
 
-	public Sprite(Point ptMap, Direction direction, int speed, BufferedImage image) {
+	
+	public Sprite(Map map, Point ptMap, Direction direction, int speed) {
 		super();
+		this.map = map;
 		this.ptMap = ptMap;
 		this.direction = direction;
 		this.speed = speed;
 		this.ptTile = MapEngine.tilePlotter(ptMap);
-		this.image = image;
 		
 		int seqDuration = (int)(1000/speed);
 		player = new SpritePlayer(seqDuration);
 	}
 	
-	
-	public Direction getDirection() {
-		return direction;
+	public Point getPtMap() {
+		return ptMap;
 	}
 
-	public void setDirection(Direction direction) {
-		this.direction = direction;
-	}
-
-
-	public BufferedImage getImage() {
-		return image;
-	}
-
-	public void setImage(BufferedImage image) {
-		this.image = image;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setPtMap(Point ptMap) {
+		this.ptMap = ptMap;
 	}
 	
 	public int getSpeed() {
@@ -75,18 +59,31 @@ public class Sprite
 		int seqDuration = (int)(1000/speed);
 		player.setSeqDuration(seqDuration);
 	}
-
-
-	// Ham ve sprite theo toa do ptTile
-	public void draw(Graphics g){
-		g.drawImage(image,ptTile.x, ptTile.y-16, null);
+	
+	public Direction getDirection() {
+		return direction;
 	}
+
+	public void setDirection(Direction direction) {
+		this.direction = direction;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	
+	public abstract void draw(Graphics g);
+	
 	
 	/** 
 	 * Ham update toa do ptMap va ptTile, duoc goi trong moi vong lap GameUpdate()
-	 *  ptMap
+	 * ptMap
 	 *     Chi update theo tung o mot,nhay tung o,dung phuong thuc tileWalker
-	 *  ptTile 
+	 * ptTile 
 	 *     Update chi tiet hon,ung voi moi lan thay doi ptMap se co nhieu lan thay doi ptTile trung gian
 	 */
 	public void update(){
@@ -94,25 +91,7 @@ public class Sprite
 	}
 	
 	
-	/**
-	 *  Kiem tra o hien tai co phai la mot chot chuyen huong khong?
-	 *  Neu dung la chot chuyen huong,tien hanh update lai huong di chuyen cho sprite
-	 */
-	public void updateDirection(){
-		
-	}
 	
-	
-	
-	/**
-	 * Lớp SpritePlayer có nhiệm vụ tạo chuyển động cho đối tượng Sprite, tức thay đổi tọa độ của Sprite
-	 * Tọa độ Sprite sẽ được thay đổi (offset) sau một khoảng thời gian cố định nào đó,phụ thuộc tốc độ Sprite
-	 * Mặc dù,Sprite gọi update() sau mỗi vòng lặp game,nhưng không phải lần gọi nào cũng update tọa độ của nó
-	 * mà chỉ sau những khoảng thời gian nhất định (một vài lần gọi update() ) thì sự thay đổi tọa độ mới
-	 * xảy ra.
-	 * @author Khanh
-	 *
-	 */
 	private class SpritePlayer {
 		private int seqDuration; // ms Thoi gian de di chuyen mot o toa do tile
 		private int showPeriod;  // ms Thoi gian show cua moi buoc di chuyen nho
@@ -136,6 +115,14 @@ public class Sprite
 		
 		public void updateStick(){
 			if(active){
+				// Khi bat dau vao mot o, kiem tra o ke tiep co bi lock khong
+				if(animTotalTime == 0){
+					Cell cell = map.getCell(MapEngine.tileWalker(ptMap, direction));
+					if(cell != null && cell.getClass() == Controller.class){
+						Controller controller = (Controller)cell;
+						if(controller.isLock()) return;
+					}
+				}
 				// Xac dinh tong thoi gian tinh tu chu ki moi
 				animTotalTime = (animTotalTime + animPeriod)% seqDuration; // Trong khoang 0 -> seqDuration-1 
 				step = (int)animTotalTime/showPeriod;  // Trong khoang 0 -> totalStep-1
@@ -155,11 +142,14 @@ public class Sprite
 					ptTile.y = ptTileBefore.y + step*ptOffset.y;
 				}
 				
-				// Kiem tra dieu kien update ptMap
+				// Kiem tra dieu kien trang thai cua Sprite
 				if((animTotalTime + animPeriod) >= seqDuration){
+					// Den vi tri cuoi cung, cap nhat toa do va huong
 					ptMap = MapEngine.tileWalker(ptMap, direction);
 					updateDirection();
+					animTotalTime = 0;
 				}
+					
 			}	
 		}
 
@@ -168,5 +158,9 @@ public class Sprite
 		}
 		
 	}
+
+
+
+
 
 }  

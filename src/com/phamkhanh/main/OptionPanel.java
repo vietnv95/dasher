@@ -14,6 +14,7 @@ public class OptionPanel extends JPanel {
 	private JButton[] btnArray;
 	private int level;
 	private int type;
+	
 	public int getType() {
 		return type;
 	}
@@ -22,9 +23,9 @@ public class OptionPanel extends JPanel {
 		this.type = type;
 	}
 
-	private MainFrame parent;
+	private ChooseMapFrame parent;
 
-	public OptionPanel(MainFrame parent) {
+	public OptionPanel(ChooseMapFrame parent) {
 		this.parent = parent;
 		level = -1;
 		type = 0;

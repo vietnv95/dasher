@@ -15,6 +15,8 @@ import com.phamkhanh.mapdesign.action.ActionFactory;
 public class DesignFrame extends JFrame implements WindowListener, WindowFocusListener{
 	private String userName;
 	private JMenuBar menuBar;
+
+
 	private JToolBar toolBar;
 	private TileBar tileBar;
 	private TabbedPane tabbedPane;
@@ -43,6 +45,7 @@ public class DesignFrame extends JFrame implements WindowListener, WindowFocusLi
 	}
 
 	
+
 	
 	
 	@Override

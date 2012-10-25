@@ -14,7 +14,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import com.phamkhanh.main.MainFrame;
+import com.phamkhanh.main.ChooseMapFrame;
 
 public class GameAccess {
 	
@@ -269,7 +269,7 @@ public class GameAccess {
 				String valuePassword = new String(passwordText.getPassword());
 				
 				if(XmlProcessor.checkSignIn(valueName, valuePassword)) {
-					MainFrame frameCreation = new MainFrame(valueName);
+					ChooseMapFrame frameCreation = new ChooseMapFrame(valueName);
 					accountLoginError.setVisible(false);
 					accountLoginSuccess.setVisible(true);
 					getContain().dispose();
