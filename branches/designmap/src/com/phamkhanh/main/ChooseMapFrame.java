@@ -4,15 +4,13 @@ import java.awt.*;
 
 import javax.swing.*;
 
-public class MainFrame extends JFrame{
-	/**
-	 * @param args
-	 */
+public class ChooseMapFrame extends JFrame{
+	
 	
 	private BarPanel barPanel;
 	private OptionPanel optionPanel;
 	
-	public MainFrame(String userName){
+	public ChooseMapFrame(String userName){
 		this.setSize(976,488);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.barPanel = new  BarPanel(this, userName);
@@ -42,5 +40,9 @@ public class MainFrame extends JFrame{
 	
 	public OptionPanel getOptionPanel() {
 		return optionPanel;
+	}
+	
+	public static void main(String[] args){
+		new ChooseMapFrame("khanh");
 	}
 }

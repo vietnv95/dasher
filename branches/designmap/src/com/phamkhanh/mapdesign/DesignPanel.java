@@ -264,6 +264,7 @@ public class DesignPanel extends JPanel implements Runnable {
 	// the animation thread yields to other running threads
 	private static final int NO_DELAYS_PER_YIELD = 16;
 
+
 	// no. of frames that can be skipped in any one animation loop
 	// game updated but not rendered
 	private static int MAX_FRAME_SKIPS = 5;
