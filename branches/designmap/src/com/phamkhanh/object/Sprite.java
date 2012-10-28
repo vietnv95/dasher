@@ -88,17 +88,18 @@ public abstract class Sprite
 	 */
 	public void update(){
 		player.updateStick();
+		updateState();
 	}
 	
 	private void updateState(){
 		// Update toa do
 		ptMap = MapEngine.tileWalker(ptMap, direction);
-		
+		this.ptTile = MapEngine.tilePlotter(ptMap);
 		// Update huong
 		Cell cell = map.getCell(ptMap);
-		if(cell.getClass() == Conveyer.class){
+		if(cell != null && cell.getClass() == Conveyer.class){
 			direction = ((Conveyer)cell).getDirection();
-		}else if(cell.getClass() == Controller.class){
+		}else if(cell != null && cell.getClass() == Controller.class){
 			direction = ((Controller)cell).getDirection();
 		}
 		
@@ -118,6 +119,8 @@ public abstract class Sprite
 		
 		public SpritePlayer(int seqDuration){
 			this.seqDuration = seqDuration;
+			ptOffset = new Point(MapEngine.TILEWIDTH/4,MapEngine.TILEHEIGHT/4);
+			
 			this.totalStep = (int)(MapEngine.TILEWIDTH/(2*ptOffset.x));  // Can totalStep buoc nho moi di het TILEWIDTH,moi buoc nho di chuyen ptOffset.x
 			showPeriod = (int)(seqDuration/this.totalStep);
 			
@@ -171,9 +174,4 @@ public abstract class Sprite
 		}
 		
 	}
-
-
-
-
-
 }  
