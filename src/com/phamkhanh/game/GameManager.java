@@ -424,7 +424,6 @@ public class GameManager extends JPanel implements Runnable {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			System.out.println("Anh yeu em:" + clock);
 			clock = (++clock) % 2;
 			if (clock == 1) {
 				genBox();
