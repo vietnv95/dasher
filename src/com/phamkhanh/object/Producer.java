@@ -1,5 +1,6 @@
 package com.phamkhanh.object;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
@@ -10,13 +11,24 @@ import com.phamkhanh.mapengine.MapEngine;
 
 public class Producer extends Conveyer {
 
-	public Producer() {
 
+	public Producer() {
+			
 	}
 
 	public Producer(Point ptMap, Direction direction) {
 		super(ptMap, direction);
+		
 
+	}
+	
+	/*
+	 * return a Box with ptMap, direction speed, color
+	 */
+	
+	public Box genBox(Map map,Point ptMap, Direction direction, int speed, Color color){
+	
+		return new Box(map,ptMap,direction,speed,color);
 	}
 
 	@Override

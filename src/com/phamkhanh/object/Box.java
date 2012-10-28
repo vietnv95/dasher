@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapengine.Direction;
+import com.phamkhanh.mapengine.MapEngine;
 
 public class Box extends Sprite {
 	private Color color;
@@ -26,19 +27,20 @@ public class Box extends Sprite {
 	
 	@Override
 	public void draw(Graphics g) {
-		int x = getPtMap().x;
-		int y = getPtMap().y;
+		Point pt = this.getPtMap();
+		Point ptTile = MapEngine.tilePlotter(pt);
 		// update offset box
 		
 		
 		
-		g.drawImage(getImage(),x , y, null);
+		g.drawImage(getImage(),ptTile.x, ptTile.y, null);
 	}
 	
 	private BufferedImage getImage(){
 		if(color == Color.red) return ImageLoader.getImage("box1.png");
 		if(color == Color.blue) return ImageLoader.getImage("box2.png");
 		if(color == Color.blue) return ImageLoader.getImage("box2.png");
+		
 		else return ImageLoader.getImage("box3.png");
 	}
 

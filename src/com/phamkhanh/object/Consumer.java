@@ -28,6 +28,9 @@ public class Consumer extends Cell {
 		this.color = color;
 	}
 
+	public boolean check(Point pt){
+		return (pt.x == this.getPtMap().x) && (pt.y == this.getPtMap().y);
+	}
 	@Override
 	public void draw(Graphics g) {
 		Point ptTile = MapEngine.tilePlotter(getPtMap());

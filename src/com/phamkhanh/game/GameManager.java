@@ -14,12 +14,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import com.phamkhanh.exception.MapErrorException;
 import com.phamkhanh.image.ImageLoader;
+import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Box;
 import com.phamkhanh.object.Cell;
@@ -30,7 +34,7 @@ import com.phamkhanh.object.ObjectPlayer;
 import com.phamkhanh.object.Producer;
 
 public class GameManager extends JPanel implements Runnable {
-	
+
 	private static final int PWIDTH = 976; // size of panel
 	private static final int PHEIGHT = 488;
 
@@ -39,8 +43,11 @@ public class GameManager extends JPanel implements Runnable {
 	private volatile boolean gameOver = false; // for game termination
 	private volatile boolean isPaused = false;
 
-	
-	private int period = 1000000000 / MapEngine.FPS; // ns A iteration time as 100 FPS.Khoang 12.5ms mot vong lap game
+	private int period = 1000000000 / MapEngine.FPS; // ns A iteration time as
+														// 100 FPS.Khoang 12.5ms
+														// private int period =
+														// 400000000; // mot
+														// vong lap game
 
 	// Global variables for off-screen rendering
 	private Graphics dbg;
@@ -51,15 +58,20 @@ public class GameManager extends JPanel implements Runnable {
 	// Map element
 	private Map map;
 	private GameState gameState;
-	
+
 	private Producer producer;
 	private ArrayList<Consumer> consumers;
 	private ArrayList<Box> boxes;
 	private Queue<Box> queueBox;
-	
+	private int numBoxComplete;
+	private int currentTime;
+	private int clock; // dung de sinh box tu dong sau 3s
+	private Timer timer;
+
 	public GameManager() {
+		initial();
 		setDoubleBuffered(false);
-	    setBackground(Color.black);
+		setBackground(Color.black);
 		setPreferredSize(new Dimension(PWIDTH, PHEIGHT));
 
 		setFocusable(true);
@@ -68,29 +80,8 @@ public class GameManager extends JPanel implements Runnable {
 
 		// Load background image
 		bgImage = ImageLoader.loadImage("background.jpg");
-		map = new Map();
-		
-		try {
-			map.load("resources/data/maps/level1/vidu.txt");
-		} catch (MapErrorException e) {
-			e.printStackTrace();
-		}
-		
+
 		// Them su kien cho cac Controller
-		for(int y = 0; y < Map.MAPHEIGHT; y++){
-			for(int x = 0; x < Map.MAPWIDTH; x++){
-				Cell cell = map.getCell(x, y);
-				if(cell != null && cell.getClass() == Controller.class){
-					Controller controller = ((Controller)cell);
-					controller.addActionListener(new ActionListener() {		
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							((Controller)e.getSource()).nextDirection();
-						}
-					});
-				}
-			}
-		}
 
 		// listen for mouse presses
 		addMouseListener(new MouseAdapter() {
@@ -99,15 +90,15 @@ public class GameManager extends JPanel implements Runnable {
 			}
 
 			@Override
-			public void mouseClicked(MouseEvent e) {	
+			public void mouseClicked(MouseEvent e) {
 				Point ptMap = MapEngine.mouseMap(e.getPoint());
 				Cell cell = map.getCell(ptMap);
-				if(cell != null && cell.getClass() == Controller.class){
-					((Controller)cell).fireActionEvent();
+				if (cell != null && cell.getClass() == Controller.class) {
+					((Controller) cell).fireActionEvent();
 					System.out.println(cell);
 				}
 			}
-			
+
 		});
 	}
 
@@ -125,9 +116,57 @@ public class GameManager extends JPanel implements Runnable {
 		});
 	}
 
+	/*
+	 * load map load producer consumer
+	 */
+	public void initial() {
+		this.boxes = new ArrayList<>();
+		this.queueBox = new LinkedList<>();
+		this.consumers = new ArrayList<>();
+		this.producer = new Producer();
+		map = new Map();
+
+		try {
+			map.load("resources/data/maps/level1/vidu.txt");
+
+		} catch (MapErrorException e) {
+			e.printStackTrace();
+		}
+		for (int y = 0; y < Map.MAPHEIGHT; y++) {
+			for (int x = 0; x < Map.MAPWIDTH; x++) {
+				Cell cell = map.getCell(x, y);
+				if (cell != null && cell.getClass() == Producer.class) {
+					this.producer = (Producer) cell;
+				}
+				if (cell != null && cell.getClass() == Consumer.class) {
+					this.consumers.add((Consumer) cell);
+				}
+				if (cell != null && cell.getClass() == Controller.class) {
+					Controller controller = ((Controller) cell);
+					controller.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							((Controller) e.getSource()).nextDirection();
+						}
+					});
+				}
+			}
+		}
+		this.gameState = new GameState();
+		for (Consumer con : consumers) {
+			Color color = this.changeColor();
+			con.setColor(color);
+
+			queueBox.add(new Box(map, producer.getPtMap(), Direction.SOUTHEAST,
+					gameState.getSpeed(), color));
+
+		}
+
+	}
+
 	protected void testPressed(int x, int y) {
 		if (!isPaused && !gameOver) {
-			
+
 		}
 	}
 
@@ -144,6 +183,13 @@ public class GameManager extends JPanel implements Runnable {
 		if (animator == null || !running) {
 			animator = new Thread(this);
 			animator.start();
+			if (gameState.getStatus() == 1) {
+				this.currentTime = 0; // bat dau tinh gio
+				this.clock = 0;
+				this.timer = new Timer(200, new TimeClock());
+				timer.start();
+			}
+
 		}
 	}
 
@@ -163,10 +209,10 @@ public class GameManager extends JPanel implements Runnable {
 	@Override
 	/* Repeatedly update,render,sleep. */
 	public void run() {
-		long beforeTime, afterTime, timeDiff, sleepTime;   // ns
-		long overSleepTime = 0L;   // ns
+		long beforeTime, afterTime, timeDiff, sleepTime; // ns
+		long overSleepTime = 0L; // ns
 		int noDelays = 0;
-		long excess = 0L;  // ns
+		long excess = 0L; // ns
 
 		beforeTime = System.nanoTime();
 
@@ -175,7 +221,7 @@ public class GameManager extends JPanel implements Runnable {
 			gameUpdate(); // game state is updated
 			gameRender(); // render to a buffer
 			paintScreen(); // draw buffer to screen
-			
+
 			afterTime = System.nanoTime();
 			timeDiff = afterTime - beforeTime;
 			sleepTime = (period - timeDiff) - overSleepTime;
@@ -207,7 +253,7 @@ public class GameManager extends JPanel implements Runnable {
 			 * without rendering to get the updates/sec nearer to the required
 			 * FPS
 			 */
-			
+
 			int skips = 0;
 			while ((excess > period) && (skips < MAX_FRAME_SKIPS)) {
 				excess -= period;
@@ -221,11 +267,59 @@ public class GameManager extends JPanel implements Runnable {
 	// Update game state
 	private void gameUpdate() {
 		if (!isPaused && !gameOver) {
+			
 			ObjectPlayer.getInstance().updateStick();
+			for (int i = 0; i < boxes.size(); i++) {
+				Box box = boxes.get(i);
+				box.update();
+				for (int j = 0; j < consumers.size(); j++) {
+					Consumer con = consumers.get(j);
+
+					if (con.check(box.getPtMap())) {
+						
+						// neu box lot vao consumer thì ....
+						if (con.getColor() == box.getColor()) {
+							// trung mau tang diem. tang so luong box da hoan
+							// thanh
+							this.numBoxComplete++;
+							if (this.numBoxComplete == this.gameState
+									.getNumberOfBoxComplete()) {
+								this.endGame();
+							} else {
+								// doi ngau nhien mau cua consumer va them mot
+								// box co mau nhu vay vao queue
+								Color color = this.changeColor();
+								con.setColor(color);
+								Box newBox = new Box(map, producer.getPtMap(),
+										producer.getDirection(), gameState
+										.getSpeed(), color);
+								
+								queueBox.add(newBox);
+								boxes.remove(box);
+
+							}
+						} else {
+							// khong trung mau, giu nguyen mau consumer va them
+							// box nay vao hang doi
+							
+							Box newBox = new Box(map, producer.getPtMap(),
+									producer.getDirection(), gameState
+									.getSpeed(), box.getColor());
+							
+							queueBox.add(newBox);
+							boxes.remove(box);
+
+						}
+
+					}
+				}
+			}
 		}
+
 	}
 
-	// draw the current frame to an image buffer (secondary image) use graphics of image
+	// draw the current frame to an image buffer (secondary image) use graphics
+	// of image
 	// size of image buffer == size of screen
 	private void gameRender() {
 		if (dbImage == null) {
@@ -245,7 +339,9 @@ public class GameManager extends JPanel implements Runnable {
 		// draw background image
 		dbg.drawImage(bgImage, 0, 0, null);
 		map.draw(dbg);
-		
+		for (Box box : boxes) {
+			box.draw(dbg);
+		}
 		if (gameOver) {
 			gameOverMessage(dbg);
 		}
@@ -280,6 +376,65 @@ public class GameManager extends JPanel implements Runnable {
 		isPaused = false;
 	}
 
+	/*
+	 * tao mau ngau nhien
+	 */
+	public Color changeColor() {
+		Random rand = new Random();
+		int num = rand.nextInt(6) + 1;
+		switch (num) {
+		case 1:
+			return Color.black;
+		case 2:
+			return Color.blue;
+		case 3:
+			return Color.cyan;
+		case 4:
+			return Color.gray;
+		case 5:
+			return Color.green;
+		case 6:
+			return Color.red;
+		case 7:
+			return Color.yellow;
+		}
+		return Color.white;
+	}
+
 	// More methods,explained later..
+	/*
+	 * generate box and add it into boxqueue
+	 */
+	public void genBox() {
+
+		if (queueBox.isEmpty())
+			return;
+		this.boxes.add(queueBox.remove());
+	}
+
+	/*
+	 * end game
+	 */
+	public void endGame() {
+
+	}
+
+	private class TimeClock implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println("Anh yeu em:" + clock);
+			clock = (++clock) % 2;
+			if (clock == 1) {
+				genBox();
+			}
+			currentTime++;
+			if (currentTime == gameState.getTime()) {
+				endGame();
+			}
+		}
+
+	}
 
 }
