@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.logging.Logger;
+
 import com.phamkhanh.mapdesign.DesignPanel;
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
@@ -13,6 +15,8 @@ import com.phamkhanh.object.Conveyer;
 import com.phamkhanh.object.Map;
 
 public class AddConveyersCommand implements Command {
+	
+	private Logger logger = Logger.getLogger(AddConveyersCommand.class.getName());
 
 	private Map map;
 	private List<Cell> before = new ArrayList<Cell>();
@@ -27,14 +31,13 @@ public class AddConveyersCommand implements Command {
 		ptTail = MapEngine.mouseMap(pnlDesign.ptTailPixel);
 		direct = MapEngine.tileDirecter(ptHead, ptTail);
 		
-		Point ptNext = (Point) ptHead.clone();  // Biáº¿n cháº¡y dÃ¹ng Ä‘á»ƒ duyá»‡t tá»« ptHead -> ptTail
+		Point ptNext = (Point) ptHead.clone();  // Biến chạy duyệt cell từ ptHead -> ptTail
 		if (direct != null ) {
-			// ThÃªm cell trÆ°á»›c ptHead náº¿u nÃ³ lÃ  instanceof Conveyer
+			// Thêm cell trước ptHead nếu là instanceof Conveyer
 			Cell cellBeforeHead = getBeforeHead();
 			if(cellBeforeHead != null) before.add(cellBeforeHead);
 			
-			// ThÃªm cÃ¡c cell tá»« ptHead -> ptTail 
-			//ứ ự ử ừ
+			
 			do {
 				before.add(map.getCell(ptNext));
 				if (ptNext.equals(ptTail))
@@ -42,13 +45,13 @@ public class AddConveyersCommand implements Command {
 				ptNext = MapEngine.tileWalker(ptNext, direct);
 			} while (true);
 			
-			// ThÃªm cell sau ptTail náº¿u nÃ³ lÃ  instanceof Conveyer
+			// Thêm cell sau ptTail nếu là  instanceof Conveyer
 			Cell cellAfterTail = getAfterTail();
 			if(cellAfterTail != null) before.add(cellAfterTail);
 		}
 	}
 	
-	/** Láº¥y vá»� Ã´ Ä‘áº±ng trÆ°á»›c ptHead ngÆ°á»£c hÆ°á»›ng direction. */
+	/** Lấy về Cell ngay trước ptHead theo hướng ngược direction. */
 	private Cell getBeforeHead(){
 		Point ptBeforeHead = MapEngine.tileWalker(ptHead, MapEngine.getDirection(direct, MapEngine.BACK));
 		Cell cellBeforeHead = map.getCell(ptBeforeHead);
@@ -56,7 +59,7 @@ public class AddConveyersCommand implements Command {
 		else return null;
 	}
 	
-	/** Láº¥y vá»� Ã´ ngay sau ptTail theo hÆ°á»›ng direction. */
+	/** Lấy về cell ngay sau ptTail theo hướng direction. */
 	private Cell getAfterTail(){
 		Point ptAfterTail = MapEngine.tileWalker(ptTail, direct);
 		Cell cellAfterTail = map.getCell(ptAfterTail);
@@ -66,14 +69,15 @@ public class AddConveyersCommand implements Command {
 
 	@Override
 	public void execute() {
-		// Duyá»‡t tá»«ng Ã´ trong máº£ng before
+		// Duyệt từng cell trong mảng before, ban đầu khởi tạo tất cả là Cell
 		for (Cell cell : before) {
 			int x = cell.getPtMap().x;
 			int y = cell.getPtMap().y;
 			map.setCell(x, y, new Conveyer(new Point(x, y), direct) );
 		}
 
-		// Conveyers cháº¡y tá»« Ä‘áº§u Ä‘áº¿n cuá»‘i máº£ng before, Ä‘Æ°á»£c update láº¡i
+		// Tiến hành update lại các đối tượng Cell trong before khi cần thiết
+		// đặc biệt là các vị trí đoạn conveyer giao nhau hoặc vị trí đầu, vị trí cuối
 		for(int i = 0; i < before.size(); i++){
 			if(i == 0){
 				changeHead(before.get(i), direct);
@@ -84,14 +88,13 @@ public class AddConveyersCommand implements Command {
 			}	
 		}
 
-		// LÆ°u trá»¯ láº¡i thÃ´ng tin sau khi thay Ä‘á»•i, Ä‘á»ƒ táº¡o lá»‡nh undo,redo
+		// Lưu lại thông tin để sử dụng cho quá trình undo,redo
 		for (Cell cell : before) {
 			after.add(map.getCell(cell.getPtMap()));
 		}
 		
-		// Log láº¡i thÃ´ng tin Ä‘á»ƒ test
-		System.out.println("before:"+before);
-		System.out.println("after:"+after);
+		// Log thông tin để test
+		logger.info("\nAfter : "+ after+ "\nBefore : " + before);
 	}
 
 	private void changeHead(Cell cell, Direction direction) {
@@ -115,7 +118,7 @@ public class AddConveyersCommand implements Command {
 			directions.add(back);
 
 		
-		int nGates = 0; // sá»‘ cá»•ng cÃ³ thá»ƒ vÃ o hoáº·c ra Ã´ cell
+		int nGates = 0; // Số cổng vào hoặc ra Cell (nếu nGates >=, Cell chắc chắn là COntroller)
 		if(isFront != 0) nGates++;
 		if(isLeft != 0) nGates++;
 		if(isRight != 0) nGates++;
@@ -125,12 +128,12 @@ public class AddConveyersCommand implements Command {
 		int y = cell.getPtMap().y;
 		if (nGates >= 3) {	
 			map.setCell(x ,y, new Controller(new Point(x, y),0, new ArrayList<>(directions)) );
-		}else if(nGates == 2){ // Cháº¯c cháº¯n cÃ³ isFront = 1
-			// CÃ³ 4 trÆ°á»�ng há»£p
-			// TH1. isBack == -1 : Conveyer bÃ¬nh thÆ°á»�ng
-			// TH2. isLeft == -1 : Conveyer ngÃ£ ráº½ trÃ¡i
-			// TH3. isRight == -1 : Conveyer ngÃ£ ráº½ pháº£i
-			// Th4. CÃ²n láº¡i, cell cÃ³ 2 Ä‘áº§u ra nÃªn trá»Ÿ thÃ nh Controller
+		}else if(nGates == 2){ // Chắc chắn có isFront = 1
+			// Có 4 trường hợp xảy ra
+			// TH1. isBack == -1 : Conveyer bình thường
+			// TH2. isLeft == -1 : Conveyer ngã rẽ trái
+			// TH3. isRight == -1 : Conveyer ngã rẽ phải
+			// Th4. Còn lại,Controller
 			if(isBack == -1){
 				map.setCell(x, y, new Conveyer(new Point(x,y), direction) );
 			}else if(isLeft == -1){
@@ -169,7 +172,7 @@ public class AddConveyersCommand implements Command {
 			directions.add(back);
 
 		
-		int nGates = 0; // sá»‘ cá»•ng cÃ³ thá»ƒ vÃ o hoáº·c ra Ã´ cell
+		int nGates = 0; // Số cổng vào hoặc ra Cell
 		if(isLeft != 0) nGates++;
 		if(isRight != 0) nGates++;
 		if(isFront != 0) nGates++;
@@ -180,9 +183,7 @@ public class AddConveyersCommand implements Command {
 		if (nGates >= 3) {
 			map.setCell(x, y, new Controller(new Point(x, y),0, new ArrayList<>(directions)) );
 		}else if(nGates == 2){  // chac chan co isBack = -1 (con 1 trong 4 huong kia la 1 hoac -1)
-			// CÃ³ 2 trÆ°á»�ng há»£p
-			// TH1. isFront != 0 : Conveyer bÃ¬nh thÆ°á»�ng
-			// TH2. isLeft != 0 || isRight != 0 : Conveyer ngÃ£ ráº½
+			// Tương tự, có 4 trường hợp xảy ra
 			if(isFront == 1){
 				map.setCell(x, y, new Conveyer(new Point(x,y), direction) );
 			}else if(isLeft == 1){
@@ -190,7 +191,9 @@ public class AddConveyersCommand implements Command {
 			}else if(isRight == 1){
 				map.setCell(x, y, new Conveyer(new Point(x,y), direction, Conveyer.TURN_RIGHT) );
 			}else{
-				map.setCell(x, y, new Controller(new Point(x, y),0, new ArrayList<>(directions)) );
+				// trường hợp hai đoạn băng chuyền cùng đi vào, không xác định được cell đó nên
+				// là loại gì
+				//map.setCell(x, y, new Controller(new Point(x, y),0, new ArrayList<>(directions)) );
 			}
 		}else{  // nGates == 1
 			// Do nothing
@@ -219,12 +222,12 @@ public class AddConveyersCommand implements Command {
 		}
 	}
 
-	/** Kiá»ƒm tra hÆ°á»›ng cá»§a Ã´ náº±m cáº¡nh Ã´ cell (vá»� hÆ°á»›ng direct)
+	/** Kiểm tra hướng t của Cell nằm cạnh ô cell (theo hướng direction)
 	 * @param cell
 	 * @param direct
-	 * @return 1 náº¿u hÆ°á»›ng Ä‘Ã³ hÆ°á»›ng ra khá»�i cell (tá»©c cÃ¹ng hÆ°á»›ng vá»›i direct)
-	 *         -1 náº¿u hÆ°á»›ng Ä‘Ã³ hÆ°á»›ng Ä‘i vÃ o cell (tá»©c ngÆ°á»£c hÆ°á»›ng vá»›i direct)
-	 *         0 náº¿u hÆ°á»›ng Ä‘Ã³ khÃ´ng cÃ¹ng phÆ°Æ¡ng vá»›i direct (khÃ´ng hÆ°á»›ng ra cÅ©ng cháº³ng hÆ°á»›ng vÃ o cell)
+	 * @return 1 Nếu t đi ra khỏi cell
+	 *         -1 Nếu t đi vào cell (ngược hướng direction)
+	 *         0 Nếu t hướng trái hoặc phải (như vậy không ra cũng chẳng vào cell)
 	 */        
 	private int testDirection(Cell cell, Direction direct) {
 		Point ptMap = MapEngine.tileWalker(cell.getPtMap(), direct);

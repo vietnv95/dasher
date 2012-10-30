@@ -7,16 +7,27 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import javax.swing.JPanel;
 
+import com.phamkhanh.exception.MapErrorException;
+import com.phamkhanh.exception.SaveNotSuccessException;
 import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapdesign.command.HistoryCommand;
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Conveyer;
-import com.phamkhanh.object.ObjectPlayer;
 import com.phamkhanh.object.Map;
+import com.phamkhanh.object.ObjectPlayer;
 
 public class DesignPanel extends JPanel implements Runnable {
 	private TabbedPane parent;
@@ -66,7 +77,7 @@ public class DesignPanel extends JPanel implements Runnable {
 		setPreferredSize(new Dimension(PWIDTH, PHEIGHT));
 
 		setFocusable(true);
-		requestFocus(); // Jpanel now receives key events
+		requestFocusInWindow(); // Jpanel now receives key events
 
 		history = new HistoryCommand(this);
 
@@ -117,6 +128,45 @@ public class DesignPanel extends JPanel implements Runnable {
 	public void setMap(Map map) {
 		this.map = map;
 	}
+	
+	public void saveXML() throws SaveNotSuccessException{
+		XMLEncoder encoder = null;
+		try{
+			encoder = new XMLEncoder(
+			           new BufferedOutputStream(
+			           new FileOutputStream(map.getFile()) ));  // FileNotFoundException | SercurityException
+	
+			encoder.writeObject(map);
+		}catch(IOException | SecurityException e){
+			e.printStackTrace();
+			throw new SaveNotSuccessException("Lỗi lưu bản đồ, file name không đúng định dạng hoặc không có quyền mở,ghi file");
+		}finally{
+			if(encoder != null){
+				encoder.close();
+			}
+		}
+	}
+	
+	public void loadXML(String filePath) throws MapErrorException {
+		XMLDecoder decoder = null;
+		try{ 
+			File file = new File(filePath);
+			decoder = new XMLDecoder(
+				    new BufferedInputStream(
+				    new FileInputStream(file) )); // FileNotFoundException | SercurityException
+	
+			map = (Map)decoder.readObject();
+			map.setFile(file);   // NullPointerException
+
+		}catch(SecurityException | IOException e){
+			e.printStackTrace();
+			throw new MapErrorException("Không load được bản đồ : không đọc được file hoặc file bị lỗi");
+		}finally {
+			if(decoder != null){
+				decoder.close();
+			}
+		}
+	}
 
 	public HistoryCommand getHistory() {
 		return history;
@@ -160,7 +210,7 @@ public class DesignPanel extends JPanel implements Runnable {
 
 	// Update Design state
 	private void designUpdate() {
-		if(isPaused && designEnd){
+		if(isPaused || designEnd){
 			return;
 		}
 		ObjectPlayer.getInstance().updateStick();
@@ -170,7 +220,7 @@ public class DesignPanel extends JPanel implements Runnable {
 	// of image
 	// size of image buffer == size of screen
 	private void designRender() {
-		if(isPaused && designEnd){
+		if(isPaused || designEnd){
 			return;
 		}
 		
@@ -238,7 +288,7 @@ public class DesignPanel extends JPanel implements Runnable {
 
 	// actively render the buffer image to the screen size (PWITH, PHEIGHT)
 	private void paintScreen() {
-		if(isPaused && designEnd){
+		if(isPaused || designEnd){
 			return;
 		}
 		Graphics g;

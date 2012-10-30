@@ -13,13 +13,11 @@ public class Producer extends Conveyer {
 
 
 	public Producer() {
-			
+
 	}
 
 	public Producer(Point ptMap, Direction direction) {
 		super(ptMap, direction);
-		
-
 	}
 	
 	/*

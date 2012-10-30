@@ -12,7 +12,6 @@ public class Consumer extends Cell {
 	private Color color;
 
 	public Consumer() {
-
 	}
 
 	public Consumer(Point ptMap, Color color) {

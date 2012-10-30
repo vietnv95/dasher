@@ -29,7 +29,7 @@ public class RedoAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		DesignPanel pnlDesign = tabbedPane.getPanel();
+		DesignPanel pnlDesign = tabbedPane.getCurrentTab();
 		if(pnlDesign != null){
 			pnlDesign.getHistory().redo();
 		}

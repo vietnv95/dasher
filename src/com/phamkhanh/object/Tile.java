@@ -10,7 +10,6 @@ public class Tile extends Cell {
 	private BufferedImage image;
 
 	public Tile() {
-
 	}
 
 	public Tile(Point ptMap, BufferedImage image) {

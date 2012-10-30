@@ -1,4 +1,4 @@
-package com.phamkhanh.object;
+﻿package com.phamkhanh.object;
 
 import java.awt.Graphics;
 import java.awt.Point;
@@ -14,11 +14,11 @@ import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapengine.Direction;
 import com.phamkhanh.mapengine.MapEngine;
 
-public class Controller extends Cell {
+public class Controller extends Cell{
 	private ArrayList<Direction> directions; // Mang da sap xep huong theo thu
 												// tu
 	private int index; // Chi so cua cua huong hien tai trong mang
-	ArrayList<ActionListener> listeners = new ArrayList<>();
+	private transient ArrayList<ActionListener> listeners = new ArrayList<>();
 
 	/**
 	 * true neu co box da chiem controller nay false neu nguoc lai
@@ -39,6 +39,21 @@ public class Controller extends Cell {
 	public ArrayList<Direction> getDirections() {
 		return directions;
 	}
+	
+	public void setDirections(ArrayList<Direction> directions) {
+		this.directions = directions;
+	}
+
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+
 
 	public boolean isLock() {
 		return lock;

@@ -5,24 +5,25 @@ import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+
 import com.phamkhanh.exception.MapErrorException;
 import com.phamkhanh.exception.SaveNotSuccessException;
 
-public class Map {
+public class Map implements Serializable {
 	
 	// size of map by tile
 	public static final int MAPWIDTH = 30;
 	public static final int MAPHEIGHT = 60;
 	
 	private boolean saved = false;
-	private File file;
+	private transient File file = null;
 	private Cell[][] tileMap = new Cell[MAPWIDTH][MAPHEIGHT];
 	
 	// Tao ban do rong
 	public Map(){
-		
 		for(int i = 0; i < MAPWIDTH; i++){
 			for(int j = 0; j < MAPHEIGHT; j++){
 				tileMap[i][j] = new Cell(new Point(i, j));
@@ -68,6 +69,14 @@ public class Map {
 		}
 	}
 	
+	public Cell[][] getTileMap() {
+		return tileMap;
+	}
+
+	public void setTileMap(Cell[][] tileMap) {
+		this.tileMap = tileMap;
+	}
+
 	public void draw(Graphics g){
 		for(int y = 0; y < MAPHEIGHT; y++){
 			for(int x = 0; x < MAPWIDTH; x++){
@@ -96,6 +105,7 @@ public class Map {
 		}
 		
 	}
+	
 	
 	/** 
 	 * Luu doi tuong map vao file, neu luu khong thanh cong thi tung Exception
