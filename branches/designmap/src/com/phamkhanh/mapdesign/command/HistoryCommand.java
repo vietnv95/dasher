@@ -1,6 +1,7 @@
 package com.phamkhanh.mapdesign.command;
 
 import java.util.LinkedList;
+import java.util.logging.Logger;
 
 import com.phamkhanh.mapdesign.DesignPanel;
 import com.phamkhanh.mapdesign.TabbedPane;
@@ -8,6 +9,8 @@ import com.phamkhanh.object.Map;
 
 public class HistoryCommand {
 	private DesignPanel parent;
+	
+	private Logger logger = Logger.getLogger(HistoryCommand.class.getName());
 	
 	// History List Commands
 	private LinkedList<Command> history;
@@ -40,27 +43,35 @@ public class HistoryCommand {
 	public void undo(){
 		if(!history.isEmpty() && index < history.size()){
 			Command current = history.get(index);
-			current.undo();
+			current.undo();	
 			fireMapChangeEvent();
 			index++;
+				logger.info(toString());
 		}
 	}
 	
 	public void redo(){
 		if(!history.isEmpty() && index > 0){
+			index--;
 			Command current = history.get(index);
 			current.redo();
 			fireMapChangeEvent();
-			index--;
+				logger.info(toString());
 		}
 	}
 	
+	/**
+	 * Mỗi một thao tác undo,redo history làm cho map đang design trở về trạng
+	 * thái chưa lưu, do vậy cần update lại một vài thuộc tính
+	 * 1. saved của đối tượng map
+	 * 2. title của currentTab trong TabbedPane
+	 */
 	public void fireMapChangeEvent(){
 		Map map = parent.getMap();
 		TabbedPane tabbedPane = parent.getParent();
-		int index = tabbedPane.getSelectedIndex();
+		int i = tabbedPane.getSelectedIndex();
 		if(map.isSaved()){
-			tabbedPane.setTitleAt(index, "*"+tabbedPane.getTitleAt(index));
+			tabbedPane.setTitleAt(i, "*"+tabbedPane.getTitleAt(i));
 			map.setSaved(false);
 		}	
 	}
@@ -69,6 +80,4 @@ public class HistoryCommand {
 	public String toString() {
 		return "HistoryCommand [history=" + history + ", index=" + index + "]";
 	}
-	
-	
 }

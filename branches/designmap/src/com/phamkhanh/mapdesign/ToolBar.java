@@ -7,6 +7,7 @@ import com.phamkhanh.mapdesign.action.ActionFactory;
 
 public class ToolBar extends JToolBar {	
 	private JButton btnNew;
+	private JButton btnOpen;
 	private JButton btnSave;
 	private JButton btnUndo;
 	private JButton btnRedo;
@@ -18,6 +19,10 @@ public class ToolBar extends JToolBar {
 		btnNew = new JButton("New");
 		btnNew.setAction(actionFactory.getNewAction());
 		add(btnNew);
+		
+		btnOpen = new JButton("Open");
+		btnOpen.setAction(actionFactory.getOpenAction());
+		add(btnOpen);
 		
 		btnSave = new JButton("Save");
 		btnSave.setAction(actionFactory.getSaveAction());

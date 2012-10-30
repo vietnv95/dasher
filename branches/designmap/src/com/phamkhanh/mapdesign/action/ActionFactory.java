@@ -30,4 +30,8 @@ public class ActionFactory {
 		return RedoAction.getInstance(tabbedPane);
 	}
 	
+	public OpenAction getOpenAction(){
+		return OpenAction.getInstance(tabbedPane);
+	}
+	
 }

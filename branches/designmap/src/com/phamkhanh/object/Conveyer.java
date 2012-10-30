@@ -20,7 +20,7 @@ public class Conveyer extends Cell {
 	public static final int TURN_LEFT = 1;
 	public static final int TURN_RIGHT = 2;
 
-	private ObjectPlayer player;
+	private ObjectPlayer player = ObjectPlayer.getInstance();
 
 	public Conveyer() {
 
@@ -29,7 +29,6 @@ public class Conveyer extends Cell {
 	public Conveyer(Point ptMap, Direction direction) {
 		super(ptMap);
 		this.direction = direction;
-		this.player = ObjectPlayer.getInstance();
 		this.type = CONVEYER;
 	}
 
@@ -44,6 +43,14 @@ public class Conveyer extends Cell {
 
 	public void setDirection(Direction direction) {
 		this.direction = direction;
+	}
+	
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class TileBar extends JPanel {
 				int index = e.getY() / MapEngine.TILEHEIGHT;
 				if(index >= 0 && index < numberTile){
 					indexSelected = index;
-					DesignPanel pnlDesign = tabbedPane.getPanel();
+					DesignPanel pnlDesign = tabbedPane.getCurrentTab();
 					if(pnlDesign != null){
 						pnlDesign.setTileSelected(tiles[indexSelected]);
 					}

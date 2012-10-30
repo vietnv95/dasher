@@ -4,11 +4,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
-	private DesignPanel designPanel;
+	private DesignPanel pnlDesign;
+	private TabbedPane tabbedPane;
 
-	public KeyHandler(DesignPanel designPanel) {
+	public KeyHandler(DesignPanel pnlDesign) {
 		super();
-		this.designPanel = designPanel;
+		this.pnlDesign = pnlDesign;
+		this.tabbedPane = pnlDesign.getParent();
 	}
 
 	@Override
@@ -17,16 +19,20 @@ public class KeyHandler implements KeyListener {
 		if (keyCode == KeyEvent.VK_ESCAPE || keyCode == KeyEvent.VK_END
 				|| keyCode == KeyEvent.VK_Q
 				|| (keyCode == KeyEvent.VK_C && e.isControlDown())) {
-			designPanel.stopDesign();
+			// Back to choose map screen
+			System.exit(0);
+		}
+		if(keyCode == KeyEvent.VK_X && e.isControlDown()){
+			tabbedPane.closeTab(tabbedPane.getSelectedIndex());
 		}
 		if (keyCode == KeyEvent.VK_Z && e.isControlDown()) {
-			designPanel.getHistory().undo();
+			pnlDesign.getHistory().undo();
 		}
 		if (keyCode == KeyEvent.VK_R && e.isControlDown()) {
-			designPanel.getHistory().redo();
+			pnlDesign.getHistory().redo();
 		}
 		if(keyCode == KeyEvent.VK_S && e.isControlDown()){
-			
+			tabbedPane.saveTab(tabbedPane.getSelectedIndex());
 		}
 	}
 
