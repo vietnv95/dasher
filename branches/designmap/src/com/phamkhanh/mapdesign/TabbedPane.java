@@ -21,6 +21,9 @@ public class TabbedPane extends JTabbedPane {
 	 * Chỉ số index của tab được active lúc trước, được set khi fireStateChange event
 	 * nhằm mục đích pause những tab không active
 	 */
+	private static final int TABBEDPANE_WIDTH = 976;
+	private static final int TABBEDPANE_HEIGHT = 528;
+	
 	private int previousTabIndex = -1;
 	
 	/**
@@ -35,7 +38,7 @@ public class TabbedPane extends JTabbedPane {
 	 * và resumeDesign tab vừa mới chọn 
 	 */
 	public TabbedPane() {
-		setPreferredSize(new Dimension(976, 528));
+		setPreferredSize(new Dimension(TABBEDPANE_WIDTH, TABBEDPANE_HEIGHT));
 
 		addChangeListener(new ChangeListener() {
 			@Override
@@ -54,12 +57,6 @@ public class TabbedPane extends JTabbedPane {
 		});
 	}
 
-	/**
-	 * Trả về đối tượng DesignPanel trong tab đang được mở<br>
-	 * Trả về <b>null</b> nếu không tab nào được chọn
-	 * 
-	 * @author Khanh
-	 */
 	public DesignPanel getCurrentTab() {
 		return (DesignPanel) getSelectedComponent();
 	}
@@ -145,8 +142,7 @@ public class TabbedPane extends JTabbedPane {
 		Map map = pnlDesign.getMap();
 		File file = null;
 		File pictureFile = null;
-		
-		// map chưa được lưu thì bắt đầu lưu map
+
 		if (!map.isSaved()) {
 			// Bản đồ chưa được lưu lần đầu tiên, hiển thị hộp thoại chọn thư
 			// mục lưu file
@@ -162,11 +158,12 @@ public class TabbedPane extends JTabbedPane {
 				}
 			}
 
-			// Lưu map vào file
-			// Đồng thời update lại title của tab và thuộc tính saved của map
 			try {
 				map.save();  // SaveNotSuccessException
 				//pnlDesign.saveXML();
+				map.setSaved(true); 
+				this.setTitleAt(index, map.getFile().getName() );  
+
 				map.setSaved(true); // file đã được save
 				this.setTitleAt(index, map.getFile().getName()); // Update lại
 																	// title,

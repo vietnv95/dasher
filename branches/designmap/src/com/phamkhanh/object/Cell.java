@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.io.Serializable;
 
 import com.phamkhanh.exception.MapErrorException;
-import com.phamkhanh.mapengine.MapEngine;
 
 public class Cell implements Serializable {
 	private Point ptMap;
