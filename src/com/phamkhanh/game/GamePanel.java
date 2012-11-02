@@ -21,8 +21,8 @@ import com.phamkhanh.image.ImageLoader;
 import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Controller;
+import com.phamkhanh.object.Conveyer;
 import com.phamkhanh.object.Map;
-import com.phamkhanh.object.ObjectPlayer;
 
 public class GamePanel extends JPanel implements Runnable {
 	
@@ -210,7 +210,7 @@ public class GamePanel extends JPanel implements Runnable {
 	// Update game state
 	private void gameUpdate() {
 		if (!isPaused && !gameOver) {
-			ObjectPlayer.getInstance().updateStick();
+			Conveyer.update();
 		}
 	}
 

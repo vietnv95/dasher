@@ -31,8 +31,6 @@ public class Box extends Sprite {
 		Point ptTile = MapEngine.tilePlotter(pt);
 		// update offset box
 		
-		
-		
 		g.drawImage(getImage(),ptTile.x, ptTile.y, null);
 	}
 	
@@ -40,13 +38,7 @@ public class Box extends Sprite {
 		if(color == Color.red) return ImageLoader.getImage("box1.png");
 		if(color == Color.blue) return ImageLoader.getImage("box2.png");
 		if(color == Color.blue) return ImageLoader.getImage("box2.png");
-		
 		else return ImageLoader.getImage("box3.png");
-	}
-
-
-
-
-	
+	}	
 	
 }

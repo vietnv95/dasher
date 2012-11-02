@@ -29,8 +29,8 @@ import com.phamkhanh.object.Box;
 import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Consumer;
 import com.phamkhanh.object.Controller;
+import com.phamkhanh.object.Conveyer;
 import com.phamkhanh.object.Map;
-import com.phamkhanh.object.ObjectPlayer;
 import com.phamkhanh.object.Producer;
 
 public class GameManager extends JPanel implements Runnable {
@@ -268,7 +268,8 @@ public class GameManager extends JPanel implements Runnable {
 	private void gameUpdate() {
 		if (!isPaused && !gameOver) {
 			
-			ObjectPlayer.getInstance().updateStick();
+			Conveyer.update();
+			
 			for (int i = 0; i < boxes.size(); i++) {
 				Box box = boxes.get(i);
 				box.update();

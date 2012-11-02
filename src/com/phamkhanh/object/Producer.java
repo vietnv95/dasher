@@ -1,7 +1,7 @@
 package com.phamkhanh.object;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 
 import com.phamkhanh.exception.MapErrorException;
@@ -30,9 +30,9 @@ public class Producer extends Conveyer {
 	}
 
 	@Override
-	public void draw(Graphics g) {
+	public void draw(Graphics2D g) {
 		Point ptTile = MapEngine.tilePlotter(getPtMap());
-		g.drawImage(ImageLoader.getImage("producer.png"), ptTile.x, ptTile.y,
+		g.drawImage(ImageLoader.getImage("producer1.png"), ptTile.x -48, ptTile.y -64,
 				null);
 	}
 

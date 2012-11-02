@@ -1,6 +1,6 @@
 package com.phamkhanh.object;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,16 +9,19 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.phamkhanh.exception.MapErrorException;
 import com.phamkhanh.exception.SaveNotSuccessException;
 
+@XmlRootElement(namespace="com.phamkhanh.object.Map")
 public class Map implements Serializable {
 	
 	// size of map by tile
 	public static final int MAPWIDTH = 30;
 	public static final int MAPHEIGHT = 60;
 	
-	private boolean saved = false;
+	private transient boolean saved = false;
 	private transient File file = null;
 	private Cell[][] tileMap = new Cell[MAPWIDTH][MAPHEIGHT];
 	
@@ -30,8 +33,6 @@ public class Map implements Serializable {
 			}
 		}
 	}
-	
-	
 	
 	public boolean isSaved() {
 		return saved;
@@ -76,8 +77,12 @@ public class Map implements Serializable {
 	public void setTileMap(Cell[][] tileMap) {
 		this.tileMap = tileMap;
 	}
+	
+	public void update(){
+		Conveyer.update();
+	}
 
-	public void draw(Graphics g){
+	public void draw(Graphics2D g){
 		for(int y = 0; y < MAPHEIGHT; y++){
 			for(int x = 0; x < MAPWIDTH; x++){
 				if(tileMap[x][y].getClass() == Cell.class){
@@ -93,7 +98,13 @@ public class Map implements Serializable {
 				}
 			}
 		}
-		
+		for(int y = 0; y < MAPHEIGHT; y++){
+			for(int x = 0; x < MAPWIDTH; x++){
+				if(tileMap[x][y].getClass() == Conveyer.class){
+					((Conveyer)tileMap[x][y]).drawLine(g);
+				}
+			}
+		}
 		for(int y = 0; y < MAPHEIGHT; y++){
 			for(int x = 0; x < MAPWIDTH; x++){
 				if(tileMap[x][y].getClass() == Controller.class || 

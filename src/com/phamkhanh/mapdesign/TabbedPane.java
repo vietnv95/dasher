@@ -105,7 +105,8 @@ public class TabbedPane extends JTabbedPane {
 		
 		try {
 			// Sau khi chọn file, tiến hành load thông tin bản đồ 
-			map.load(file.getAbsolutePath());
+			pnlDesign.unmarshalXML(file.getAbsolutePath());
+			//map.load(file.getAbsolutePath());
 			//pnlDesign.loadXML(file.getAbsolutePath());
 			map.setSaved(true);
 			// Mở tab mới với title và pnlDesign tương ứng
@@ -159,7 +160,8 @@ public class TabbedPane extends JTabbedPane {
 			}
 
 			try {
-				map.save();  // SaveNotSuccessException
+				pnlDesign.marshalXML();
+				//map.save();  // SaveNotSuccessException
 				//pnlDesign.saveXML();
 				map.setSaved(true); 
 				this.setTitleAt(index, map.getFile().getName() );  
