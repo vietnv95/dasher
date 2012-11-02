@@ -3,6 +3,7 @@ package com.phamkhanh.mapdesign;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -17,6 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JPanel;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import com.phamkhanh.exception.MapErrorException;
 import com.phamkhanh.exception.SaveNotSuccessException;
@@ -27,7 +31,6 @@ import com.phamkhanh.mapengine.MapEngine;
 import com.phamkhanh.object.Cell;
 import com.phamkhanh.object.Conveyer;
 import com.phamkhanh.object.Map;
-import com.phamkhanh.object.ObjectPlayer;
 
 public class DesignPanel extends JPanel implements Runnable {
 	private TabbedPane parent;
@@ -36,7 +39,7 @@ public class DesignPanel extends JPanel implements Runnable {
 	private static final int PHEIGHT = 488;
 
 	// Global variables for off-screen rendering
-	private Graphics dbg;
+	private Graphics2D dbg;
 	private Image dbImage = null;
 
 	// History List
@@ -167,6 +170,36 @@ public class DesignPanel extends JPanel implements Runnable {
 			}
 		}
 	}
+	
+	public void marshalXML() throws SaveNotSuccessException{
+		try{
+			JAXBContext context = JAXBContext.newInstance(Map.class); // JAXBException | IlligalArgumentsException
+			Marshaller m = context.createMarshaller();  // JAXBException
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);  // PropertyException
+			m.marshal(map, System.out);
+			m.marshal(map, map.getFile());
+		}catch(Exception e){
+			e.printStackTrace();
+			throw new SaveNotSuccessException("Lỗi lưu bản đồ");
+		}
+	}
+	
+	public void unmarshalXML(String filePath) throws MapErrorException{
+		try{
+			JAXBContext context = JAXBContext.newInstance(Map.class); // JAXBException | IlligalArgumentsException
+			Unmarshaller m = context.createUnmarshaller();  // JAXBException
+			
+			File file = new File(filePath);
+			map = (Map)m.unmarshal(file);
+			map.setFile(file);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			throw new MapErrorException("Bản đồ có lỗi, không load được dữ liệu");
+		}
+	}
+	
+	
 
 	public HistoryCommand getHistory() {
 		return history;
@@ -213,7 +246,7 @@ public class DesignPanel extends JPanel implements Runnable {
 		if(isPaused || designEnd){
 			return;
 		}
-		ObjectPlayer.getInstance().updateStick();
+		map.update();
 	}
 
 	// draw the current frame to an image buffer (secondary image) use graphics
@@ -230,7 +263,7 @@ public class DesignPanel extends JPanel implements Runnable {
 				System.out.println("dbImage is null");
 				return;
 			} else {
-				dbg = dbImage.getGraphics();
+				dbg = (Graphics2D)dbImage.getGraphics();
 			}
 		}
 

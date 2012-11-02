@@ -1,7 +1,7 @@
 package com.phamkhanh.object;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 
 import com.phamkhanh.exception.MapErrorException;
@@ -31,7 +31,7 @@ public class Consumer extends Cell {
 		return (pt.x == this.getPtMap().x) && (pt.y == this.getPtMap().y);
 	}
 	@Override
-	public void draw(Graphics g) {
+	public void draw(Graphics2D g) {
 		Point ptTile = MapEngine.tilePlotter(getPtMap());
 		g.drawImage(ImageLoader.getImage("consumer.png"), ptTile.x, ptTile.y,
 				null);
